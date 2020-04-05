@@ -1,4 +1,5 @@
 ﻿using HambusCommonLibrary;
+using KellermanSoftware.CompareNetObjects;
 using System;
 using System.IO.Ports;
 using System.Text;
@@ -10,22 +11,14 @@ namespace RigBus
   public class Kenwood
   {
     public RigState state = new RigState();
+    public RigState prevState = new RigState();
+    private CompareLogic compareLogic = new CompareLogic();
+
+
     public CommPortConfig portConf;
     public int pollTimer { get; set; } = 2000;
 
     private SerialPort serialPort;
-    public int ThreadId;
-    //public string Id
-    //{
-    //    get
-    //    {
-    //        return state.Id;
-    //    }
-    //    set
-    //    {
-    //        state.Id = value;
-    //    }
-    //}
 
     public enum Mode
     {
@@ -70,8 +63,6 @@ namespace RigBus
       /// </summary>
       ERROR = 10
     }
-
-
 
     private void SendSerial(string str)
     {
@@ -308,9 +299,20 @@ namespace RigBus
         var freqInt = Convert.ToInt64(freqStr);
         state.Freq = freqInt;
         state.FreqA = freqInt;
-        //udpServer.SendBroadcast(state, 7300);
+        signal();
       }
       catch (Exception) { }
+
+    }
+
+    private void signal()
+    {
+
+      if (!compareLogic.Compare(prevState, state).AreEqual)
+      {
+        prevState = (RigState) state.Clone();
+        Console.WriteLine("rig setting change");
+      }
 
     }
 
@@ -329,7 +331,7 @@ namespace RigBus
         Thread.Sleep(pollTimer);
         SendSerial($"FT;");
         SendSerial($"FA;");
-        SendSerial("BU;");
+        SendSerial($"MD;");
       }
 
     }
@@ -341,8 +343,6 @@ namespace RigBus
       {
         try
         {
-          //string message = serialPort.ReadLine();
-          //Console.WriteLine(message);
           try
           {
             int c = serialPort.ReadChar();
