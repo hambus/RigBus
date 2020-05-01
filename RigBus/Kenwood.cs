@@ -1,4 +1,5 @@
 ﻿using HambusCommonLibrary;
+using HamBusSig;
 using KellermanSoftware.CompareNetObjects;
 using System;
 using System.IO.Ports;
@@ -14,12 +15,15 @@ namespace RigBus
     public RigState prevState = new RigState();
     private CompareLogic compareLogic = new CompareLogic();
 
-
     public CommPortConfig portConf;
     public int pollTimer { get; set; } = 2000;
 
     private SerialPort serialPort;
-
+    private SigRConnection sigConnect;
+    public Kenwood(SigRConnection sigRConnection)
+    {
+      sigConnect = sigRConnection;
+    }
     public enum Mode
     {
       /// <summary>
@@ -66,7 +70,6 @@ namespace RigBus
 
     private void SendSerial(string str)
     {
-      Console.WriteLine(str);
       serialPort.Write(str);
     }
 
@@ -125,8 +128,6 @@ namespace RigBus
       cmd = Regex.Replace(cmd, @"\t|\n|\r", "");
       string subcmd = cmd.Substring(0, 2).ToUpper();
 
-
-      Console.WriteLine($"rcmd: {subcmd}");
       switch (subcmd)
       {
         case "ID":
@@ -301,7 +302,10 @@ namespace RigBus
         state.FreqA = freqInt;
         signal();
       }
-      catch (Exception) { }
+      catch (Exception e) 
+      {
+        Console.WriteLine(e.Message);
+      }
 
     }
 
@@ -311,9 +315,15 @@ namespace RigBus
       if (!compareLogic.Compare(prevState, state).AreEqual)
       {
         prevState = (RigState) state.Clone();
-        Console.WriteLine("rig setting change");
+        sigConnect.sendRigState(state);
+        printRigSettings();
       }
 
+    }
+    private void printRigSettings()
+    {
+      Console.WriteLine($"Freq: {state.Freq}");
+      Console.WriteLine($"Mode: {state.Mode}");
     }
 
     private void VFOCommand(string cmd)
@@ -355,7 +365,7 @@ namespace RigBus
             if (ch == ';')
             {
               sb.Append(ch);
-              Console.WriteLine($"response: {sb.ToString()}");
+              //Console.WriteLine($"response: {sb.ToString()}");
               Command(sb.ToString());
               sb.Clear();
             }

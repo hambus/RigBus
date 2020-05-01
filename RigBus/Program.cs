@@ -1,4 +1,5 @@
 ﻿using HambusCommonLibrary;
+using HamBusSig;
 using System;
 
 namespace RigBus
@@ -8,6 +9,8 @@ namespace RigBus
     static void Main(string[] args)
     {
       CommPortConfig portConf = new CommPortConfig();
+      SigRConnection sigConnect = new SigRConnection();
+      sigConnect.StartConnection("http://localhost:7300/masterbus");
       portConf.BaudRate = 57600;
       portConf.BaudRate = 8;
       portConf.StopBits = "one";
@@ -16,7 +19,7 @@ namespace RigBus
       portConf.DisplayName = "PowerSDR";
       portConf.Handshake = "none";
 
-      var kenwood = new Kenwood();
+      var kenwood = new Kenwood(sigConnect);
       kenwood.OpenPort(portConf);
       Console.ReadKey();
     }
