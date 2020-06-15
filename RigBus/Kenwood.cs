@@ -15,11 +15,11 @@ namespace RigBus
     public RigState prevState = new RigState();
     private CompareLogic compareLogic = new CompareLogic();
 
-    public CommPortConfig portConf;
+    public CommPortConfig? portConf;
     public int pollTimer { get; set; } = 2000;
 
-    private SerialPort serialPort;
-    private SigRConnection sigConnect;
+    private SerialPort? serialPort;
+    private SigRConnection? sigConnect = null;
     public Kenwood(SigRConnection sigRConnection)
     {
       sigConnect = sigRConnection;
@@ -70,6 +70,7 @@ namespace RigBus
 
     private void SendSerial(string str)
     {
+      if (serialPort == null) return;
       serialPort.Write(str);
     }
 
@@ -302,7 +303,7 @@ namespace RigBus
         state.FreqA = freqInt;
         signal();
       }
-      catch (Exception e) 
+      catch (Exception e)
       {
         Console.WriteLine(e.Message);
       }
@@ -314,7 +315,8 @@ namespace RigBus
 
       if (!compareLogic.Compare(prevState, state).AreEqual)
       {
-        prevState = (RigState) state.Clone();
+        prevState = (RigState)state.Clone();
+        if (sigConnect == null) throw new NullReferenceException("sigConnect is null");
         sigConnect.sendRigState(state);
         printRigSettings();
       }
@@ -336,7 +338,7 @@ namespace RigBus
     }
     public void PollRig()
     {
-      while(true)
+      while (true)
       {
         Thread.Sleep(pollTimer);
         SendSerial($"FT;");
@@ -355,9 +357,12 @@ namespace RigBus
         {
           try
           {
+            if (serialPort == null) throw new NullReferenceException("serial port is null!");
             int c = serialPort.ReadChar();
             if (c < 0)
             {
+              if (portConf == null)
+                throw new NullReferenceException("port confi is null!");
               Console.WriteLine("Serial port {0} read error", portConf.PortName);
               return;
             }
@@ -376,10 +381,14 @@ namespace RigBus
           }
           catch (TimeoutException)
           {
+            if (portConf == null)
+              throw new NullReferenceException("port confi is null!");
             Console.WriteLine("Timeout Exception:  Maybe {0} isn't running.", portConf.DisplayName);
           }
           catch (Exception e)
           {
+            if (portConf == null)
+              throw new NullReferenceException("port confi is null!");
             Console.WriteLine("Serial Read Error: {0} port {1} Display Name: {2}",
                 e.ToString(), portConf.PortName, portConf.DisplayName);
           }
@@ -390,6 +399,7 @@ namespace RigBus
         }
         catch (FormatException) { }
       }
+      if (serialPort == null) throw new NullReferenceException("serial port is null!");
       serialPort.Close();
     }
 
