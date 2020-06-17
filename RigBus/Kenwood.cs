@@ -1,11 +1,11 @@
-﻿using HambusCommonLibrary;
-using HamBusSig;
-using KellermanSoftware.CompareNetObjects;
-using System;
+﻿using System;
 using System.IO.Ports;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using HambusCommonLibrary;
+using HamBusSig;
+using KellermanSoftware.CompareNetObjects;
 
 namespace RigBus
 {
@@ -119,7 +119,7 @@ namespace RigBus
                 serialPort.StopBits = ToStop(port.StopBits);
 
 
-                serialPort.Handshake = port.Handshake;
+            serialPort.Handshake = port.Handshake;
 
             serialPort.Open();
             continueReadingSerialPort = true;
