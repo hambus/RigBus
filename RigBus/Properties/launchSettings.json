@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "RigBus": {
+      "commandName": "Project",
+      "commandLineArgs": "-n flex "
+    }
+  }
+}
