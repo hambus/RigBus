@@ -409,6 +409,7 @@ namespace RigBus
 
         private Mode ModeStandardToKenwoodEnum()
         {
+      if (state.Mode == null) return Mode.ERROR;
 
             switch (state.Mode.ToUpper())
             {
