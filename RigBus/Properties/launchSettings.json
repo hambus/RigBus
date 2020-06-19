@@ -2,7 +2,7 @@
   "profiles": {
     "RigBus": {
       "commandName": "Project",
-      "commandLineArgs": "-n Flex3000 -S one -c com21 -P none -d 8 -s 57600 "
+      "commandLineArgs": "-n Flex3000 -h localhost -p 7300 -S one -c com21 -P none -d 8 -s 57600 "
     }
   }
 }
