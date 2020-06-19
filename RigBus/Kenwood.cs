@@ -119,7 +119,7 @@ namespace RigBus
                 serialPort.StopBits = ToStop(port.StopBits);
 
 
-            serialPort.Handshake = port.Handshake;
+            serialPort.Handshake = port.Handshake == null? Handshake.None: (Handshake) port.Handshake;
 
             serialPort.Open();
             continueReadingSerialPort = true;
