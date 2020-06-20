@@ -25,8 +25,8 @@ namespace RigBus
       connection.On<BusConfigurationDB>("ReceiveConfigation", (busConf) =>
       {
         string jsonString;
-        jsonString = JsonSerializer.Serialize(busConf);
-        Console.WriteLine($"Got configuration {jsonString}");
+        var conf = JsonSerializer.Deserialize<RigConf>(busConf.Configuration);
+        Console.WriteLine($"Got configuration ");
         //var newMessage = $"{user}: {message}";
         //messagesList.Items.Add(newMessage);
 

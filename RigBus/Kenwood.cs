@@ -113,7 +113,7 @@ namespace RigBus
             serialPort.PortName = port.PortName;
             if (port.BaudRate != null)
                 serialPort.BaudRate = (int)port.BaudRate;
-            serialPort.Parity = ToParity(port.Parity);
+            serialPort.Parity = ToParity(port.Parity!);
             serialPort.DataBits = 8;
             if (port.StopBits != null)
                 serialPort.StopBits = ToStop(port.StopBits);
