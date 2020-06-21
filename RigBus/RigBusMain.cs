@@ -22,7 +22,7 @@ namespace RigBus
       sigConnect = new SigRConnection();
 
       HubConnection connection = await sigConnect.StartConnection($"http://{opts.Host}:{opts.Port}/masterbus");
-      connection.On<BusConfigurationDB>("ReceiveConfigation", (busConf) =>
+      connection.On<BusConfigurationDB>("ReceiveConfiguration", (busConf) =>
       {
         var conf = JsonSerializer.Deserialize<RigConf>(busConf.Configuration);
         Console.WriteLine($"Got configuration ");
