@@ -51,14 +51,6 @@ namespace RigBus
         Environment.Exit(1);
       await rigMain.Run(confOptions);
 
-      //rigConf.BaudRate = 57600;
-      //rigConf.DataBits = 8;
-      //rigConf.StopBits = "one";
-      //rigConf.Parity = "none";
-      //rigConf.PortName = "com21";
-      //rigConf.Name = "PowerSDR";
-      //rigConf.Handshake = Handshake.None;
-
       Console.ReadKey();
     }
     static void RunOptions(Options opts)
