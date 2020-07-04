@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO.Ports;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using CoreHambusCommonLibrary;
 using CoreHambusCommonLibrary.DataLib;
+using CoreHambusCommonLibrary.Model;
+using CoreHambusCommonLibrary.Networking;
 using HambusCommonLibrary;
-using HamBusSig;
+
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace RigBus
 {
-  public class RigBusMain
+  public class RigBusMain: Bus
   {
-    private SigRConnection? sigConnect;
-    private HubConnection connection;
+    //private SigRConnection? sigConnect;
+    //private HubConnection connection;
     public RigBusMain() { }
 
     public async Task Run(Options opts)
