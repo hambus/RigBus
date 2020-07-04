@@ -7,7 +7,6 @@ using CoreHambusCommonLibrary.DataLib;
 using CoreHambusCommonLibrary.Model;
 using CoreHambusCommonLibrary.Networking;
 using HambusCommonLibrary;
-
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace RigBus

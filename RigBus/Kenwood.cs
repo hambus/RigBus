@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using CoreHambusCommonLibrary.Networking;
+using HamBusCommmonCore;
 using HambusCommonLibrary;
 using KellermanSoftware.CompareNetObjects;
 
