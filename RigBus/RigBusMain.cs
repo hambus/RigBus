@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CoreHambusCommonLibrary.DataLib;
 using CoreHambusCommonLibrary.Model;
 using CoreHambusCommonLibrary.Networking;
+using HamBusCommonCore.Model;
 using HambusCommonLibrary;
 using Microsoft.AspNetCore.SignalR.Client;
 
@@ -13,23 +14,21 @@ namespace RigBus
 {
   public class RigBusMain: Bus
   {
-    //private SigRConnection? sigConnect;
-    //private HubConnection connection;
-    public RigBusMain() { }
+    Kenwood? kenwood { get; set; } 
 
-    public async Task Run(Options opts)
+    public async Task Run()
     {
       RigConf rigConf = RigConf.Instance;
       sigConnect = new SigRConnection();
-
-      connection = await sigConnect.StartConnection($"http://{opts.Host}:{opts.Port}/masterbus");
+      kenwood = new Kenwood(sigConnect);
+      connection = await sigConnect.StartConnection($"http://{MasterHost}:{MasterPort}/masterbus");
 
       List<string>? groupList = new List<string>();
       groupList.Add("radio");
       groupList.Add("logging");
       groupList.Add("virtual");
       var ports = getAvailableSerialPort();
-      Login("Flex300", groupList, ports);
+      Login(Name, groupList, ports);
 
 
       connection.On<BusConfigurationDB>("ReceiveConfiguration", (busConf) =>
@@ -38,8 +37,8 @@ namespace RigBus
         Console.WriteLine($"Got configuration ");
 
       });
-      var kenwood = new Kenwood(sigConnect);
-      Console.WriteLine("after instantanting kenwood");
+
+      Console.WriteLine("after instantiating kenwood");
       kenwood.OpenPort(rigConf);
     }
     public async void Login(string name, List<string>? group, List<string>? ports)

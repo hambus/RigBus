@@ -22,30 +22,36 @@ namespace RigBus
   }
   class Program
   {
-    static int port = 7300;
-    static string host = "localhost";
-    static Options? confOptions;
+    RigBusMain? rigMain = null;
     static async Task Main(string[] args)
     {
-      CommandLine.Parser.Default.ParseArguments<Options>(args)
+      var prog = new Program();
+      await prog.Run(args);
+    }
+
+    async Task Run(string[] args) 
+    {
+      rigMain = new RigBusMain();
+      Parser.Default.ParseArguments<Options>(args)
         .WithParsed(RunOptions)
         .WithNotParsed(HandleParseError);
 
-      var rigMain = new RigBusMain();
-      if (confOptions == null)
-        Environment.Exit(1);
-      await rigMain.Run(confOptions);
+      await rigMain.Run();
 
       Console.ReadKey();
     }
-    static void RunOptions(Options opts)
+     void RunOptions(Options opts)
     {
-      var conf = RigConf.Instance;
-
-      if (opts.Name != null) conf.Name = opts.Name;
-      confOptions = opts;
+      if (rigMain == null)
+        throw new NullReferenceException("RigMain");
+      if (opts.Name != null) 
+        rigMain!.Name = opts.Name;
+      if (opts.Host != null)
+        rigMain!.MasterHost = opts.Host;
+      if (opts.Port != null)
+        rigMain!.MasterPort = Convert.ToInt32(opts.Port);
     }
-    static void HandleParseError(IEnumerable<Error> errs)
+    void HandleParseError(IEnumerable<Error> errs)
     {
       throw new Exception("Invalid Args");
     }
