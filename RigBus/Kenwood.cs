@@ -14,11 +14,26 @@ namespace RigBus
   {
     private CompareLogic compareLogic = new CompareLogic();
 
+    public override long Freq { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public override string Mode { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public override long FreqA { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public override long FreqB { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public override int Pitch { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public override string? RigType { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public override string? Rit { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public override int RitOffset { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public override string? Status { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public override string? StatusStr { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public override string? Split { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public override bool Tx { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public override string? Vfo { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public override string? Xit { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
     public Kenwood(SigRConnection sigRConnection) : base(sigRConnection)
     {
       initStartupState();
     }
-    public enum Mode
+    public enum ModeValues
     {
       /// <summary>
       /// Defines the LSB
@@ -228,7 +243,7 @@ namespace RigBus
         var semiLoc = cmd.IndexOf(';');
         var modeEnumStr = cmd.Substring(2, semiLoc - 2);
         var modeInt = Convert.ToInt32(modeEnumStr);
-        state.Mode = ((Mode)modeInt).ToString();
+        state.Mode = ((ModeValues)modeInt).ToString();
       }
       catch (FormatException)
       { }
@@ -355,40 +370,40 @@ namespace RigBus
       serialPort.Close();
     }
 
-    private Mode ModeStandardToKenwoodEnum()
+    private ModeValues ModeStandardToKenwoodEnum()
     {
-      if (state.Mode == null) return Mode.ERROR;
+      if (state.Mode == null) return ModeValues.ERROR;
 
       switch (state.Mode.ToUpper())
       {
         case "USB":
-          return Mode.USB;
+          return ModeValues.USB;
         case "LSB":
-          return Mode.LSB;
+          return ModeValues.LSB;
         case "CW":
-          return Mode.CW;
+          return ModeValues.CW;
         case "CWL":
-          return Mode.CW;
+          return ModeValues.CW;
         case "CWU":
-          return Mode.CW;
+          return ModeValues.CW;
         case "AM":
-          return Mode.AM;
+          return ModeValues.AM;
         case "FM":
-          return Mode.FM;
+          return ModeValues.FM;
         case "FSK":
-          return Mode.FSK;
+          return ModeValues.FSK;
         case "DIGH":
-          return Mode.FSK;
+          return ModeValues.FSK;
         case "DIGL":
-          return Mode.FSR;
+          return ModeValues.FSR;
         case "CWR":
-          return Mode.CWR;
+          return ModeValues.CWR;
         case "FSR":
-          return Mode.FSR;
+          return ModeValues.FSR;
         case "TUNE":
-          return Mode.Tune;
+          return ModeValues.Tune;
       }
-      return Mode.ERROR;
+      return ModeValues.ERROR;
     }
   }
 }
