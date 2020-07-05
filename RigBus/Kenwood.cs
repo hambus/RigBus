@@ -10,7 +10,7 @@ using KellermanSoftware.CompareNetObjects;
 
 namespace RigBus
 {
-  public class Kenwood : RigBase
+  public class Kenwood : RigControlBase
   {
     private CompareLogic compareLogic = new CompareLogic();
 

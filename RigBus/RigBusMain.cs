@@ -34,7 +34,6 @@ namespace RigBus
       connection.On<BusConfigurationDB>("ReceiveConfiguration", (busConf) =>
       {
         var conf = JsonSerializer.Deserialize<RigConf>(busConf.Configuration);
-        Console.WriteLine($"Got configuration ");
         kenwood.OpenPort(conf);
       });
     }
