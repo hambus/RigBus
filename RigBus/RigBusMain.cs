@@ -18,7 +18,7 @@ namespace RigBus
 
     public async Task Run()
     {
-      RigConf rigConf = RigConf.Instance;
+      //RigConf rigConf = RigConf.Instance;
       sigConnect = new SigRConnection();
       kenwood = new Kenwood(sigConnect);
       connection = await sigConnect.StartConnection($"http://{MasterHost}:{MasterPort}/masterbus");
@@ -35,11 +35,8 @@ namespace RigBus
       {
         var conf = JsonSerializer.Deserialize<RigConf>(busConf.Configuration);
         Console.WriteLine($"Got configuration ");
-
+        kenwood.OpenPort(conf);
       });
-
-      Console.WriteLine("after instantiating kenwood");
-      kenwood.OpenPort(rigConf);
     }
     public async void Login(string name, List<string>? group, List<string>? ports)
     {

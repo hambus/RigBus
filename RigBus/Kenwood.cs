@@ -315,7 +315,7 @@ namespace RigBus
             {
               if (portConf == null)
                 throw new NullReferenceException("port confi is null!");
-              Console.WriteLine("Serial port {0} read error", portConf.PortName);
+              Console.WriteLine("Serial port {0} read error", portConf.CommPortName);
               return;
             }
             char ch = Convert.ToChar(c);
@@ -342,7 +342,7 @@ namespace RigBus
             if (portConf == null)
               throw new NullReferenceException("port confi is null!");
             Console.WriteLine("Serial Read Error: {0} port {1} Display Name: {2}",
-                e.ToString(), portConf.PortName, portConf.Name);
+                e.ToString(), portConf.CommPortName, portConf.Name);
           }
         }
         catch (TimeoutException)
