@@ -14,20 +14,6 @@ namespace RigBus
   {
     private CompareLogic compareLogic = new CompareLogic();
 
-    public override long Freq { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public override string Mode { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public override long FreqA { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public override long FreqB { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public override int Pitch { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public override string? RigType { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public override string? Rit { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public override int RitOffset { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public override string? Status { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public override string? StatusStr { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public override string? Split { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public override bool Tx { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public override string? Vfo { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public override string? Xit { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     public Kenwood(SigRConnection sigRConnection) : base(sigRConnection)
     {
@@ -90,7 +76,7 @@ namespace RigBus
       state.StatusStr = "";
     }
 
-    public void Command(string cmd)
+    public void ParseRadioData(string cmd)
     {
       cmd = cmd.ToUpper();
       cmd = Regex.Replace(cmd, @"\t|\n|\r", "");
@@ -102,34 +88,28 @@ namespace RigBus
           IDCommand(cmd);
           break;
         case "AI":
-          AICommand(cmd);
+          AutoInfoCommand(cmd);
           break;
         case "FA":
           FreqCommand(cmd);
           break;
         case "FB":
-          FreqCommand(cmd);
-          break;
         case "FR":
-          FreqCommand(cmd);
-          break;
         case "FT":
-          FTCommand(cmd);
+          FreqCommand(cmd);
           break;
         case "MD":
           ModeCommand(cmd);
           break;
-        case "TX":
-          TXRXCommand(cmd);
-          break;
         case "IF":
-          IFCommand(cmd);
+          ReadTransCeiverStatusCommand(cmd);
           break;
+        case "TX":
         case "RX":
-          TXRXCommand(cmd);
+          SetTransmitModeCommand(cmd);
           break;
         case "KS":
-          KSCommand(cmd);
+          ReadKeyboardSpeedCommand(cmd);
           break;
         case "SM":
           SMCommand(cmd);
@@ -157,7 +137,7 @@ namespace RigBus
       SendSerial("?;");
     }
 
-    private void KSCommand(string cmd)
+    private void ReadKeyboardSpeedCommand(string cmd)
     {
       if (cmd.Length == 3)
       {
@@ -165,13 +145,6 @@ namespace RigBus
       }
     }
 
-    private void FTCommand(string cmd)
-    {
-      if (cmd.Length == 3)
-      {
-        SendSerial("FT0;");
-      }
-    }
 
     private void IDCommand(string cmd)
     {
@@ -181,7 +154,7 @@ namespace RigBus
       }
     }
 
-    private void AICommand(string cmd)
+    private void AutoInfoCommand(string cmd)
     {
       if (cmd.Length == 3)
       {
@@ -189,7 +162,7 @@ namespace RigBus
       }
     }
 
-    private void IFCommand(string cmd)
+    private void ReadTransCeiverStatusCommand(string cmd)
     {
       string sendStr;
       string extStr;
@@ -214,7 +187,7 @@ namespace RigBus
       SendSerial(sendStr);
     }
 
-    private void TXRXCommand(string cmd)
+    private void SetTransmitModeCommand(string cmd)
     {
       if (cmd == "TX;")
       {
@@ -224,7 +197,6 @@ namespace RigBus
       {
         state.Tx = false;
       }
-      //udpServer.SendBroadcast(state, 7300);
     }
 
     private void ModeCommand(string cmd)
@@ -232,35 +204,41 @@ namespace RigBus
       try
       {
         if (cmd.Length == 3)
+          GetMode();
+        else
         {
-
-          int mode = Convert.ToInt32(ModeStandardToKenwoodEnum());
-          var modeFmt = string.Format("MD{0};", mode.ToString());
-          SendSerial(modeFmt);
-
-          return;
+          var semiLoc = cmd.IndexOf(';');
+          var modeEnumStr = cmd.Substring(2, semiLoc - 2);
+          var modeInt = Convert.ToInt32(modeEnumStr);
+          state.Mode = ((ModeValues)modeInt).ToString();
         }
-        var semiLoc = cmd.IndexOf(';');
-        var modeEnumStr = cmd.Substring(2, semiLoc - 2);
-        var modeInt = Convert.ToInt32(modeEnumStr);
-        state.Mode = ((ModeValues)modeInt).ToString();
       }
       catch (FormatException)
       { }
+    }
+
+    private void GetMode()
+    {
+      int mode = Convert.ToInt32(ModeStandardToKenwoodEnum());
+      var modeFmt = string.Format("MD{0};", mode.ToString());
+      SendSerial(modeFmt);
+
+      return;
     }
 
     private void FreqCommand(string cmd)
     {
       if (cmd.Length == 3)
       {
-        if (cmd[1].ToString().ToLower() == "a")
-          SendSerial("FA" + state.FreqA.ToString("D11") + ";");
-        else
-          SendSerial("FB" + state.FreqB.ToString("D11") + ";");
+        ReqFreqCommand(cmd);
         return;
       }
 
+      ParseFrequency(cmd);
+    }
 
+    private void ParseFrequency(string cmd)
+    {
       var semiLoc = cmd.IndexOf(';');
       var freqStr = cmd.Substring(2, semiLoc - 2);
       try
@@ -274,7 +252,15 @@ namespace RigBus
       {
         Console.WriteLine(e.Message);
       }
+    }
 
+    private void ReqFreqCommand(string cmd)
+    {
+      if (cmd[1].ToString().ToLower() == "a")
+        SendSerial("FA" + state.FreqA.ToString("D11") + ";");
+      else
+        SendSerial("FB" + state.FreqB.ToString("D11") + ";");
+      return;
     }
 
     private void signal()
@@ -287,7 +273,6 @@ namespace RigBus
         sigConnect.sendRigState(state);
         printRigSettings();
       }
-
     }
     private void printRigSettings()
     {
@@ -312,7 +297,6 @@ namespace RigBus
         SendSerial($"FA;");
         SendSerial($"MD;");
       }
-
     }
     #endregion
     public override void ReadSerialPortThread()
@@ -337,8 +321,7 @@ namespace RigBus
             if (ch == ';')
             {
               sb.Append(ch);
-              //Console.WriteLine($"response: {sb.ToString()}");
-              Command(sb.ToString());
+              ParseRadioData(sb.ToString());
               sb.Clear();
             }
             else
