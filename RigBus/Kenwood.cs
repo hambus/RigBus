@@ -230,7 +230,7 @@ namespace RigBus
     {
       if (cmd.Length == 3)
       {
-        ReqFreqCommand(cmd);
+        RequestFrequency(cmd);
         return;
       }
 
@@ -254,7 +254,7 @@ namespace RigBus
       }
     }
 
-    private void ReqFreqCommand(string cmd)
+    private void RequestFrequency(string cmd)
     {
       if (cmd[1].ToString().ToLower() == "a")
         SendSerial("FA" + state.FreqA.ToString("D11") + ";");
