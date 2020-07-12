@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO.Ports;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -383,12 +382,24 @@ namespace RigBus
       }
       return ModeValues.ERROR;
     }
+    #region Commands
+    public override void SetFrequency(long freq)
+    {
 
+    }
+    public override void SetFrequencyA(long freq)
+    {
+
+    }
+    public override void SetFrequencyB(long freq)
+    { }
+    public override void SetMode(string mode) { }
     public override void SetState(RigState state)
     {
-      
+      if (state.Name == Name) return;
       Console.WriteLine($"{state.Name}: {state.Freq}  {state.Mode}");
     }
+    #endregion
     #endregion
   }
 }
