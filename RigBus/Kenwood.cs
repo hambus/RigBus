@@ -228,7 +228,7 @@ namespace RigBus
 
     private void FreqCommand(string cmd)
     {
-      if (cmd.Length == 3)
+      if (cmd.Length <= 4)
       {
         RequestFrequency(cmd);
         return;
@@ -241,6 +241,8 @@ namespace RigBus
     {
       var semiLoc = cmd.IndexOf(';');
       var freqStr = cmd.Substring(2, semiLoc - 2);
+      Console.WriteLine($"freqString: {cmd} {freqStr}");
+
       try
       {
         var freqInt = Convert.ToInt64(freqStr);
@@ -278,6 +280,7 @@ namespace RigBus
     {
       Console.WriteLine($"Freq: {state.Freq}");
       Console.WriteLine($"Mode: {state.Mode}");
+      Console.WriteLine("");
     }
 
     private void VFOCommand(string cmd)
@@ -314,7 +317,7 @@ namespace RigBus
             {
               if (portConf == null)
                 throw new NullReferenceException("port confi is null!");
-              Console.WriteLine("Serial port {0} read error", portConf.CommPortName);
+              Console.WriteLine("Serial port {0} read error", portConf.commPortName);
               return;
             }
             char ch = Convert.ToChar(c);
@@ -333,14 +336,14 @@ namespace RigBus
           {
             if (portConf == null)
               throw new NullReferenceException("port confi is null!");
-            Console.WriteLine("Timeout Exception:  Maybe {0} isn't running.", portConf.Name);
+            Console.WriteLine("Timeout Exception:  Maybe {0} isn't running.", portConf.name);
           }
           catch (Exception e)
           {
             if (portConf == null)
               throw new NullReferenceException("port confi is null!");
             Console.WriteLine("Serial Read Error: {0} port {1} Display Name: {2}",
-                e.ToString(), portConf.CommPortName, portConf.Name);
+                e.ToString(), portConf.commPortName, portConf.name);
           }
         }
         catch (TimeoutException)

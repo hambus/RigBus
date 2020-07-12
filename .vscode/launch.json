@@ -11,7 +11,7 @@
       "preLaunchTask": "build",
       // If you have changed target frameworks, make sure to update the program path.
       "program": "${workspaceFolder}/RigBus/bin/Debug/netcoreapp3.1/RigBus.dll",
-      "args": ["-n flex3000"],
+      "args": ["-n","flex3000"],
       "cwd": "${workspaceFolder}/RigBus",
       // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
       "console": "internalConsole",

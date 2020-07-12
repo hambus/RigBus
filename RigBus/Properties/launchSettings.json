@@ -2,7 +2,7 @@
   "profiles": {
     "RigBus": {
       "commandName": "Project",
-      "commandLineArgs": "-n Flex3000 "
+      "commandLineArgs": "-n sdr"
     }
   }
 }
