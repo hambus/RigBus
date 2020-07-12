@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CoreHambusCommonLibrary.DataLib;
 using CoreHambusCommonLibrary.Model;
 using CoreHambusCommonLibrary.Networking;
+using HamBusCommmonCore;
 using HamBusCommonCore.Model;
 using HambusCommonLibrary;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -14,13 +15,14 @@ namespace RigBus
 {
   public class RigBusMain: Bus
   {
-    Kenwood? kenwood { get; set; } 
+    KenwoodRig? rig { get; set; } 
 
     public async Task Run()
     {
       //RigConf rigConf = RigConf.Instance;
       sigConnect = new SigRConnection();
-      kenwood = new Kenwood(sigConnect);
+      rig = new KenwoodRig(sigConnect);
+
       connection = await sigConnect.StartConnection($"http://{MasterHost}:{MasterPort}/masterbus");
 
       List<string>? groupList = new List<string>();
@@ -29,19 +31,13 @@ namespace RigBus
       groupList.Add("virtual");
       var ports = getAvailableSerialPort();
       Login(Name, groupList, ports);
-
-
-      connection.On<BusConfigurationDB>("ReceiveConfiguration", (busConf) =>
-      {
-        var conf = JsonSerializer.Deserialize<RigConf>(busConf.Configuration);
-        kenwood.OpenPort(conf);
-      });
     }
     public async void Login(string name, List<string>? group, List<string>? ports)
     {
+      rig!.Name = name;
       try
       {
-        connection.On<string>("loginResponse", loginResponse);
+        SetupHandlerForResponses();
         await connection.InvokeAsync("Login", name, group, ports);
       }
       catch (Exception ex)
@@ -49,7 +45,25 @@ namespace RigBus
         Console.WriteLine($"Error: {ex.Message}");
       }
     }
-    private void loginResponse(string message)
+
+    private void SetupHandlerForResponses()
+    {
+      connection.On<string>("loginResponse", LoginResponse);
+      connection.On<RigState>("state", OnStateChange);
+      connection.On<BusConfigurationDB>("ReceiveConfiguration", (busConf) =>
+      {
+        var conf = JsonSerializer.Deserialize<RigConf>(busConf.Configuration);
+        rig!.OpenPort(conf);
+      });
+    }
+
+    private void OnStateChange(RigState state)
+    {
+      rig!.SetState(state);
+
+    }
+
+    private void LoginResponse(string message)
     {
       Console.WriteLine(message);
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO.Ports;
+using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
 using HambusCommonLibrary;
@@ -38,7 +39,7 @@ namespace RigBus
 
       await rigMain.Run();
 
-      Console.ReadKey();
+      while (true) Thread.Sleep(100000);
     }
      void RunOptions(Options opts)
     {

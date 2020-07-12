@@ -10,12 +10,12 @@ using KellermanSoftware.CompareNetObjects;
 
 namespace RigBus
 {
-  public class Kenwood : RigControlBase
+  public class KenwoodRig : RigControlBase
   {
     private CompareLogic compareLogic = new CompareLogic();
 
 
-    public Kenwood(SigRConnection sigRConnection) : base(sigRConnection)
+    public KenwoodRig(SigRConnection sigRConnection) : base(sigRConnection)
     {
       initStartupState();
     }
@@ -65,15 +65,7 @@ namespace RigBus
 
     protected override void initStartupState()
     {
-      state.Freq = 14250000;
-      state.FreqA = 14250000;
-      state.Mode = "usb";
-      state.Pitch = 0;
-      state.Rit = "";
-      state.RigType = "Kenwood";
-      state.RitOffset = 0;
-      state.Split = "off";
-      state.StatusStr = "";
+
     }
 
     public void ParseRadioData(string cmd)
@@ -125,7 +117,7 @@ namespace RigBus
           break;
       }
     }
-
+    #region private methods
     #region parse commands
     private void SMCommand(string cmd)
     {
@@ -174,7 +166,7 @@ namespace RigBus
       extStr = string.Format("{0}000000 ",
           Convert.ToInt32(ModeStandardToKenwoodEnum()));  // p15 6
       sendStr = string.Format("IF{0}{1}{2}{3}{4}{5}{6}{7}{8};",
-          state.Freq.ToString("D11"), //p1
+          State.Freq.ToString("D11"), //p1
           "TS480",//p2
           "+0000",// p3
           "0", // p4
@@ -191,11 +183,11 @@ namespace RigBus
     {
       if (cmd == "TX;")
       {
-        state.Tx = true;
+        State.Tx = true;
       }
       else
       {
-        state.Tx = false;
+        State.Tx = false;
       }
     }
 
@@ -210,7 +202,7 @@ namespace RigBus
           var semiLoc = cmd.IndexOf(';');
           var modeEnumStr = cmd.Substring(2, semiLoc - 2);
           var modeInt = Convert.ToInt32(modeEnumStr);
-          state.Mode = ((ModeValues)modeInt).ToString();
+          State.Mode = ((ModeValues)modeInt).ToString();
         }
       }
       catch (FormatException)
@@ -241,14 +233,14 @@ namespace RigBus
     {
       var semiLoc = cmd.IndexOf(';');
       var freqStr = cmd.Substring(2, semiLoc - 2);
-      Console.WriteLine($"freqString: {cmd} {freqStr}");
 
       try
       {
         var freqInt = Convert.ToInt64(freqStr);
-        state.Freq = freqInt;
-        state.FreqA = freqInt;
-        signal();
+        State.Freq = freqInt;
+        State.FreqA = freqInt;
+        State.Name = Name;
+        SendState();
       }
       catch (Exception e)
       {
@@ -259,27 +251,27 @@ namespace RigBus
     private void RequestFrequency(string cmd)
     {
       if (cmd[1].ToString().ToLower() == "a")
-        SendSerial("FA" + state.FreqA.ToString("D11") + ";");
+        SendSerial("FA" + State.FreqA.ToString("D11") + ";");
       else
-        SendSerial("FB" + state.FreqB.ToString("D11") + ";");
+        SendSerial("FB" + State.FreqB.ToString("D11") + ";");
       return;
     }
 
-    private void signal()
+    private void SendState()
     {
 
-      if (!compareLogic.Compare(prevState, state).AreEqual)
+      if (!compareLogic.Compare(prevState, State).AreEqual)
       {
-        prevState = (RigState)state.Clone();
+        prevState = (RigState)State.Clone();
         if (sigConnect == null) throw new NullReferenceException("sigConnect is null");
-        sigConnect.sendRigState(state);
+        sigConnect.sendRigState(State);
         printRigSettings();
       }
     }
     private void printRigSettings()
     {
-      Console.WriteLine($"Freq: {state.Freq}");
-      Console.WriteLine($"Mode: {state.Mode}");
+      Console.WriteLine($"Freq: {State.Freq}");
+      Console.WriteLine($"Mode: {State.Mode}");
       Console.WriteLine("");
     }
 
@@ -295,7 +287,7 @@ namespace RigBus
     {
       while (true)
       {
-        Thread.Sleep(pollTimer);
+        Thread.Sleep(PollTimer);
         SendSerial($"FT;");
         SendSerial($"FA;");
         SendSerial($"MD;");
@@ -358,9 +350,9 @@ namespace RigBus
 
     private ModeValues ModeStandardToKenwoodEnum()
     {
-      if (state.Mode == null) return ModeValues.ERROR;
+      if (State.Mode == null) return ModeValues.ERROR;
 
-      switch (state.Mode.ToUpper())
+      switch (State.Mode.ToUpper())
       {
         case "USB":
           return ModeValues.USB;
@@ -391,5 +383,12 @@ namespace RigBus
       }
       return ModeValues.ERROR;
     }
+
+    public override void SetState(RigState state)
+    {
+      
+      Console.WriteLine($"{state.Name}: {state.Freq}  {state.Mode}");
+    }
+    #endregion
   }
 }
