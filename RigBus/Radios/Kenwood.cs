@@ -84,10 +84,9 @@ namespace RigBus
         case "FA":
           FreqCommand(cmd);
           break;
-        case "FB":
         case "FR":
         case "FT":
-          FreqCommand(cmd);
+          VfoCommand(cmd);
           break;
         case "MD":
           ModeCommand(cmd);
@@ -216,7 +215,19 @@ namespace RigBus
 
       return;
     }
+    private void VfoCommand(string cmd)
+    {
 
+      if (cmd.Length == 4)
+      {
+        if (cmd[2] == '1')
+          State.Vfo = "b";
+        else
+          State.Vfo = "a";
+        return;
+      }
+
+    }
     private void FreqCommand(string cmd)
     {
       if (cmd.Length <= 4)
@@ -224,7 +235,6 @@ namespace RigBus
         RequestFrequency(cmd);
         return;
       }
-
       ParseFrequency(cmd);
     }
 
@@ -290,6 +300,7 @@ namespace RigBus
         SendSerial($"FT;");
         SendSerial($"FA;");
         SendSerial($"MD;");
+        SendSerial($"FR;");
       }
     }
     #endregion
@@ -385,19 +396,30 @@ namespace RigBus
     #region Commands
     public override void SetFrequency(long freq)
     {
+      var f = freq.ToString("00000000000");
+      Console.WriteLine($"freq: {f}");
 
     }
     public override void SetFrequencyA(long freq)
     {
-
+      var f = freq.ToString("00000000000");
+      var cmd = $"FA{f};";
+      Console.WriteLine($"f cmd: {cmd}");
+      SendSerial(cmd);
     }
     public override void SetFrequencyB(long freq)
-    { }
+    {
+      var f = freq.ToString("00000000000");
+      var cmd = $"FB{f};";
+      SendSerial(cmd);
+    }
     public override void SetMode(string mode) { }
     public override void SetState(RigState state)
     {
       if (state.Name == Name) return;
       Console.WriteLine($"{state.Name}: {state.Freq}  {state.Mode}");
+      SetFrequencyA(state.FreqA);
+      SetFrequencyB(state.FreqB);
     }
     #endregion
     #endregion
