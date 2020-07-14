@@ -20,46 +20,61 @@ namespace RigBus
     }
     public enum ModeValues
     {
-      /// <summary>
-      /// Defines the LSB
+      /// <summary> Defines the LSB
       /// </summary>
       LSB = 1,
-      /// <summary>
-      /// Defines the USB
+      /// <summary> Defines the USB
       /// </summary>
       USB = 2,
-      /// <summary>
-      /// Defines the CW
+      /// <summary> Defines the CW
       /// </summary>
       CW = 3,
-      /// <summary>
-      /// Defines the FM
+      /// <summary> Defines the FM
       /// </summary>
       FM = 4,
-      /// <summary>
-      /// Defines the AM
+      /// <summary> Defines the AM
       /// </summary>
       AM = 5,
-      /// <summary>
-      /// Defines the FSK
+      /// <summary> Defines the FSK
       /// </summary>
       FSK = 6,
-      /// <summary>
-      /// Defines the CWR
+      /// <summary>// Defines the CWR
       /// </summary>
       CWR = 7,
-      /// <summary>
-      /// Defines the Tune
+      /// <summary> Defines the Tune
       /// </summary>
       Tune = 8,
-      /// <summary>
-      /// Defines the FSR
+      /// <summary> Defines the FSR
       /// </summary>
       FSR = 9,
-      /// <summary>
-      /// Defines the ERROR
+      /// <summary> Defines the ERROR
       /// </summary>
       ERROR = 10
+    }
+
+    private char ToKenwoodMode(string mode)
+    {
+      switch(mode.ToLower())
+      {
+        case "lsb":
+          return '1';
+        case "usb":
+          return '2';
+        case "cw":
+          return '3';
+        case "fm":
+          return '4';
+        case "am":
+          return '5';
+        case "fsk":
+          return '6';
+        case "cw-r":
+          return '7';
+        case "fsk-r":
+          return '9';
+      }
+      return '0';
+      
     }
 
     protected override void initStartupState()
@@ -404,7 +419,6 @@ namespace RigBus
     {
       var f = freq.ToString("00000000000");
       var cmd = $"FA{f};";
-      Console.WriteLine($"f cmd: {cmd}");
       SendSerial(cmd);
     }
     public override void SetFrequencyB(long freq)
@@ -413,13 +427,21 @@ namespace RigBus
       var cmd = $"FB{f};";
       SendSerial(cmd);
     }
-    public override void SetMode(string mode) { }
+    public override void SetMode(string mode) 
+    {
+      var kMode = ToKenwoodMode(mode);
+      var cmd = $"MD{kMode};";
+      Console.WriteLine(cmd);
+      SendSerial(cmd);
+
+    }
     public override void SetState(RigState state)
     {
       if (state.Name == Name) return;
       Console.WriteLine($"{state.Name}: {state.Freq}  {state.Mode}");
       SetFrequencyA(state.FreqA);
       SetFrequencyB(state.FreqB);
+      SetMode(state.Mode);
     }
     #endregion
     #endregion
