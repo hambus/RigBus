@@ -52,30 +52,7 @@ namespace RigBus
       ERROR = 10
     }
 
-    private char ToKenwoodMode(string mode)
-    {
-      switch(mode.ToLower())
-      {
-        case "lsb":
-          return '1';
-        case "usb":
-          return '2';
-        case "cw":
-          return '3';
-        case "fm":
-          return '4';
-        case "am":
-          return '5';
-        case "fsk":
-          return '6';
-        case "cw-r":
-          return '7';
-        case "fsk-r":
-          return '9';
-      }
-      return '0';
-      
-    }
+
 
     protected override void initStartupState()
     {
@@ -170,14 +147,14 @@ namespace RigBus
     private void ReadTransCeiverStatusCommand(string cmd)
     {
       string sendStr;
-      string extStr;
+      string extStr = "1";
       if (cmd.Length != 3)
         return;
       int iTx = 0;
       //if (state.Tx)
       //  iTx = 1;
-      extStr = string.Format("{0}000000 ",
-          Convert.ToInt32(ModeStandardToKenwoodEnum()));  // p15 6
+      //extStr = string.Format("{0}000000 ",
+      //    Convert.ToInt32(ModeStandardToKenwoodEnum()));  // p15 6
       sendStr = string.Format("IF{0}{1}{2}{3}{4}{5}{6}{7}{8};",
           State.Freq.ToString("D11"), //p1
           "TS480",//p2
@@ -224,8 +201,8 @@ namespace RigBus
 
     private void GetMode()
     {
-      int mode = Convert.ToInt32(ModeStandardToKenwoodEnum());
-      var modeFmt = string.Format("MD{0};", mode.ToString());
+      //int mode = Convert.ToInt32(ModeStandardToKenwoodEnum());
+      var modeFmt = string.Format("MD;");
       SendSerial(modeFmt);
 
       return;
@@ -373,11 +350,11 @@ namespace RigBus
       serialPort.Close();
     }
 
-    private ModeValues ModeStandardToKenwoodEnum()
+    private ModeValues ModeStandardToKenwoodEnum(string mode)
     {
-      if (State.Mode == null) return ModeValues.ERROR;
+      if (mode == null) return ModeValues.ERROR;
 
-      switch (State.Mode.ToUpper())
+      switch (mode.ToUpper())
       {
         case "USB":
           return ModeValues.USB;
@@ -429,7 +406,7 @@ namespace RigBus
     }
     public override void SetMode(string mode) 
     {
-      var kMode = ToKenwoodMode(mode);
+      var kMode = (int) ModeStandardToKenwoodEnum(mode);
       var cmd = $"MD{kMode};";
       Console.WriteLine(cmd);
       SendSerial(cmd);
