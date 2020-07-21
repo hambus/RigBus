@@ -14,7 +14,7 @@ namespace RigBus
     private CompareLogic compareLogic = new CompareLogic();
 
 
-    public KenwoodRig(SigRConnection sigRConnection) : base(sigRConnection)
+    public KenwoodRig() : base()
     {
       initStartupState();
     }
@@ -265,7 +265,7 @@ namespace RigBus
       {
         prevState = (RigState)State.Clone();
         if (sigConnect == null) throw new NullReferenceException("sigConnect is null");
-        sigConnect.sendRigState(State);
+        sigConnect.SendRigState(State);
         printRigSettings();
       }
     }
@@ -318,7 +318,7 @@ namespace RigBus
             if (ch == ';')
             {
               sb.Append(ch);
-              ParseRadioData(sb.ToString());
+              ParseDataFromRadio(sb.ToString());
               sb.Clear();
             }
             else
@@ -404,8 +404,10 @@ namespace RigBus
       var cmd = $"FB{f};";
       SendSerial(cmd);
     }
-    public override void SetMode(string mode) 
+    public override void SetMode(string? mode) 
     {
+      if (string.IsNullOrWhiteSpace(mode))
+        return;
       var kMode = (int) ModeStandardToKenwoodEnum(mode);
       var cmd = $"MD{kMode};";
       Console.WriteLine(cmd);

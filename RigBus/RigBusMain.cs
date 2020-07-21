@@ -15,21 +15,24 @@ namespace RigBus
 {
   public class RigBusMain: Bus
   {
-    KenwoodRig? rig { get; set; } 
+    public KenwoodRig? rig { get; set; }
+    private SigRConnection? sigRConn;
 
     public async Task Run()
     {
-      //RigConf rigConf = RigConf.Instance;
-      sigConnect = new SigRConnection();
-      rig = new KenwoodRig(sigConnect);
+      sigRConn = SigRConnection.Instance;
 
-      connection = await sigConnect.StartConnection($"http://{MasterHost}:{MasterPort}/masterbus");
+      sigRConn.RigState__.Subscribe<RigState>(state => OnStateChange(state));
+
+      rig = new KenwoodRig();
+
+      connection = await sigRConn.StartConnection($"http://{MasterHost}:{MasterPort}/masterbus");
 
       List<string>? groupList = new List<string>();
       groupList.Add("radio");
       groupList.Add("logging");
       groupList.Add("virtual");
-      var ports = getAvailableSerialPort();
+      var ports = GetAvailableSerialPort();
       Login(Name, groupList, ports);
     }
     public async void Login(string name, List<string>? group, List<string>? ports)
@@ -37,8 +40,7 @@ namespace RigBus
       rig!.Name = name;
       try
       {
-        SetupHandlerForResponses();
-        await connection.InvokeAsync("Login", name, group, ports);
+        await connection.InvokeAsync("Login", name, group);
       }
       catch (Exception ex)
       {
@@ -46,16 +48,6 @@ namespace RigBus
       }
     }
 
-    private void SetupHandlerForResponses()
-    {
-      connection.On<string>("loginResponse", LoginResponse);
-      connection.On<RigState>("state", OnStateChange);
-      connection.On<BusConfigurationDB>("ReceiveConfiguration", (busConf) =>
-      {
-        var conf = JsonSerializer.Deserialize<RigConf>(busConf.Configuration);
-        rig!.OpenPort(conf);
-      });
-    }
 
     private void OnStateChange(RigState state)
     {
@@ -63,11 +55,7 @@ namespace RigBus
 
     }
 
-    private void LoginResponse(string message)
-    {
-      Console.WriteLine(message);
-    }
-    private List<string> getAvailableSerialPort()
+    private List<string> GetAvailableSerialPort()
     {
       List<string> list = new List<string>(SerialPort.GetPortNames());
       return list;
