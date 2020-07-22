@@ -56,10 +56,10 @@ namespace RigBus
 
     protected override void initStartupState()
     {
-
+      OpenPort();
     }
 
-    public void ParseRadioData(string cmd)
+    public void ParseDataFromRadio(string cmd)
     {
       cmd = cmd.ToUpper();
       cmd = Regex.Replace(cmd, @"\t|\n|\r", "");
@@ -264,7 +264,8 @@ namespace RigBus
       if (!compareLogic.Compare(prevState, State).AreEqual)
       {
         prevState = (RigState)State.Clone();
-        if (sigConnect == null) throw new NullReferenceException("sigConnect is null");
+        if (sigConnect == null)
+          sigConnect = SigRConnection.Instance;
         sigConnect.SendRigState(State);
         printRigSettings();
       }
