@@ -13,7 +13,7 @@ namespace RigBus
   {
     private CompareLogic compareLogic = new CompareLogic();
 
-
+    public bool IsStateLocked { get; set; } = false;
     public KenwoodRig() : base()
     {
       initStartupState();
@@ -267,14 +267,8 @@ namespace RigBus
         if (sigConnect == null)
           sigConnect = SigRConnection.Instance;
         sigConnect.SendRigState(State);
-        printRigSettings();
+
       }
-    }
-    private void printRigSettings()
-    {
-      Console.WriteLine($"Freq: {State.Freq}");
-      Console.WriteLine($"Mode: {State.Mode}");
-      Console.WriteLine("");
     }
 
     private void VFOCommand(string cmd)
@@ -395,19 +389,22 @@ namespace RigBus
     }
     public override void SetFrequencyA(long freq)
     {
+      if (IsStateLocked) return;
       var f = freq.ToString("00000000000");
       var cmd = $"FA{f};";
-      SendSerial(cmd);
+      SendSerial(cmd, IsStateLocked);
     }
     public override void SetFrequencyB(long freq)
     {
+      if (IsStateLocked) return;
       var f = freq.ToString("00000000000");
       var cmd = $"FB{f};";
       SendSerial(cmd);
     }
     public override void SetMode(string? mode) 
     {
-      if (string.IsNullOrWhiteSpace(mode))
+
+      if (string.IsNullOrWhiteSpace(mode) || IsStateLocked)
         return;
       var kMode = (int) ModeStandardToKenwoodEnum(mode);
       var cmd = $"MD{kMode};";
@@ -417,7 +414,7 @@ namespace RigBus
     }
     public override void SetState(RigState state)
     {
-      if (state.Name == Name) return;
+      if (state.Name == Name || IsStateLocked) return;
       Console.WriteLine($"{state.Name}: {state.Freq}  {state.Mode}");
       SetFrequencyA(state.FreqA);
       SetFrequencyB(state.FreqB);
