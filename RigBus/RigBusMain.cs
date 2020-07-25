@@ -18,6 +18,7 @@ namespace RigBus
     public KenwoodRig? rig { get; set; }
     private SigRConnection? sigRConn;
 
+
     public async Task Run()
     {
       sigRConn = SigRConnection.Instance;
@@ -51,7 +52,9 @@ namespace RigBus
 
     private void OnStateChange(RigState state)
     {
+      rig!.PausePolling = true;
       rig!.SetState(state);
+      rig!.PausePolling = false;
 
     }
 

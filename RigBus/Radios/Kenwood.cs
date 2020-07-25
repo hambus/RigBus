@@ -201,7 +201,7 @@ namespace RigBus
 
     private void GetMode()
     {
-      //int mode = Convert.ToInt32(ModeStandardToKenwoodEnum());
+
       var modeFmt = string.Format("MD;");
       SendSerial(modeFmt);
 
@@ -284,10 +284,13 @@ namespace RigBus
       while (true)
       {
         Thread.Sleep(PollTimer);
-        SendSerial($"FT;");
-        SendSerial($"FA;");
-        SendSerial($"MD;");
-        SendSerial($"FR;");
+        if (!PausePolling)
+        {
+          // SendSerial($"FT;"); // read vfo
+          SendSerial($"FA;"); // read vfo a
+          SendSerial($"MD;");
+          //SendSerial($"FR;");
+        }
       }
     }
     #endregion
