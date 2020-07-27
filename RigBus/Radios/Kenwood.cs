@@ -86,21 +86,11 @@ namespace RigBus
         case "IF":
           ReadTransCeiverStatusCommand(cmd);
           break;
-        case "TX":
-        case "RX":
-          SetTransmitModeCommand(cmd);
-          break;
         case "KS":
-          ReadKeyboardSpeedCommand(cmd);
-          break;
-        case "SM":
-          SMCommand(cmd);
+          ReadKeyingSpeedCommand(cmd);
           break;
         case "EX":
           EXCommand(cmd);
-          break;
-        case "?;":
-          Console.WriteLine("Error: {0}", cmd);
           break;
         default:
           Console.WriteLine("Unknown: {0}", cmd);
@@ -109,17 +99,13 @@ namespace RigBus
     }
     #region private methods
     #region parse commands
-    private void SMCommand(string cmd)
-    {
-      SendSerial("SM00000;");
-    }
 
     private void EXCommand(string cmd)
     {
       SendSerial("?;");
     }
 
-    private void ReadKeyboardSpeedCommand(string cmd)
+    private void ReadKeyingSpeedCommand(string cmd)
     {
       if (cmd.Length == 3)
       {
@@ -146,54 +132,43 @@ namespace RigBus
 
     private void ReadTransCeiverStatusCommand(string cmd)
     {
-      string sendStr;
-      string extStr = "1";
-      if (cmd.Length != 3)
-        return;
-      int iTx = 0;
-      //if (state.Tx)
-      //  iTx = 1;
-      //extStr = string.Format("{0}000000 ",
-      //    Convert.ToInt32(ModeStandardToKenwoodEnum()));  // p15 6
-      sendStr = string.Format("IF{0}{1}{2}{3}{4}{5}{6}{7}{8};",
-          State.Freq.ToString("D11"), //p1
-          "TS480",//p2
-          "+0000",// p3
-          "0", // p4
-          "0", // p5
-          "0", // p6
-          "00", // p7
-          iTx.ToString(), //p8
-          extStr); // p9
+      // IF000180907501000+0000000000030010000;
 
-      SendSerial(sendStr);
+      //   123456789 123456789 123456789 123456789 
+      //                                 111111111
+      //     11111111111222223333345677890123445
+      //   IF000180907501000+0000000000030010000;
+
+
+      var freq = cmd.Substring(2, 11);          // p1 Freq
+      var space = cmd.Substring(13, 5);          // p2 space
+      var rit = cmd.Substring(18, 5);     // p3 rit/xit offset 
+      var ritState = cmd.Substring(23, 1);     // p4 rit on/off
+      var xitState = cmd.Substring(24, 1);      // p5 xit on/off
+      var memChannel = cmd.Substring(25,1);   // p6 mem channel
+      var memChannel2 = cmd.Substring(26, 2); // p7 memchannel 2
+      var rxTx = cmd.Substring(28, 1); // p8
+      var mode = cmd.Substring(29, 1);
+      
+      // p7 mem channel 2
+      Console.WriteLine($"Freq: {freq} ");
+      Console.WriteLine($"xit: {rit} ");
+      Console.WriteLine($"ritState: {ritState} ");
+      Console.WriteLine($"xitstate: {xitState} ");
+      Console.WriteLine($"rxTx: {rxTx} ");
+      Console.WriteLine($"Mode: {mode} ");
     }
 
-    private void SetTransmitModeCommand(string cmd)
-    {
-      if (cmd == "TX;")
-      {
-        State.Tx = true;
-      }
-      else
-      {
-        State.Tx = false;
-      }
-    }
+
 
     private void ModeCommand(string cmd)
     {
       try
       {
-        if (cmd.Length == 3)
-          GetMode();
-        else
-        {
           var semiLoc = cmd.IndexOf(';');
           var modeEnumStr = cmd.Substring(2, semiLoc - 2);
           var modeInt = Convert.ToInt32(modeEnumStr);
           State.Mode = ((ModeValues)modeInt).ToString();
-        }
       }
       catch (FormatException)
       { }
@@ -286,9 +261,10 @@ namespace RigBus
         Thread.Sleep(PollTimer);
         if (!PausePolling)
         {
+          SendSerial("IF;");
           // SendSerial($"FT;"); // read vfo
-          SendSerial($"FA;"); // read vfo a
-          SendSerial($"MD;");
+          //SendSerial($"FA;"); // read vfo a
+          //SendSerial($"MD;");
           //SendSerial($"FR;");
         }
       }
