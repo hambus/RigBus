@@ -19,6 +19,7 @@ namespace RigBus
     private SigRConnection? sigRConn;
 
 
+
     public async Task Run()
     {
       sigRConn = SigRConnection.Instance;
@@ -34,6 +35,7 @@ namespace RigBus
       groupList.Add("logging");
       groupList.Add("virtual");
       var ports = GetAvailableSerialPort();
+      
       Login(Name, groupList, ports);
     }
     public async void Login(string name, List<string>? group, List<string>? ports)

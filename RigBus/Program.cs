@@ -4,6 +4,7 @@ using System.IO.Ports;
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
+using CoreHambusCommonLibrary.Model;
 using HambusCommonLibrary;
 using Microsoft.AspNetCore.SignalR.Client;
 
@@ -46,7 +47,7 @@ namespace RigBus
       if (rigMain == null)
         throw new NullReferenceException("RigMain");
       if (opts.Name != null) 
-        rigMain!.Name = opts.Name;
+        Bus.Name = opts.Name;
       if (opts.Host != null)
         rigMain!.MasterHost = opts.Host;
       if (opts.Port != null)

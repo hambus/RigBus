@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using CoreHambusCommonLibrary.Model;
 using CoreHambusCommonLibrary.Networking;
 using HamBusCommmonCore;
 using HamBusCommonCore.Model;
@@ -156,6 +157,7 @@ namespace RigBus
       if (rxTx == "1") State.Tx = true; else State.Tx = false;
       State.Mode = ModeKenwoodToStandard((ModeValues) Convert.ToInt32(mode));
       Console.WriteLine($"Mode: {mode} ");
+      State.Name = Bus.Name;
       if (State.IsDirty() == true)
         SendState();
       State.ClearDirty();
@@ -217,7 +219,7 @@ namespace RigBus
         var freqInt = Convert.ToInt64(freqStr);
         State.Freq = freqInt;
         State.FreqA = freqInt;
-        State.Name = Name;
+        State.Name = Bus.Name;
         SendState();
       }
       catch (Exception e)
@@ -419,8 +421,9 @@ namespace RigBus
     }
     public override void SetStateFromBus(RigState state)
     {
-      if (state.Name == Name || IsStateLocked) return;
-      Console.WriteLine($"{state.Name}: {state.Freq}  {state.Mode}");
+      
+      if (state.Name == Bus.Name || IsStateLocked) return;
+      Console.WriteLine($"{state.Name}: {state.Freq}  A{state.FreqA} B{state.FreqB} {state.Mode}");
       SetFrequencyA(state.FreqA);
       SetFrequencyB(state.FreqB);
       SetMode(state.Mode);
