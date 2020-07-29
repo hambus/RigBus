@@ -13,7 +13,7 @@ namespace RigBus
   {
     private CompareLogic compareLogic = new CompareLogic();
 
-    public bool IsStateLocked { get; set; } = false;
+
     public KenwoodRig() : base()
     {
       initStartupState();
@@ -46,13 +46,11 @@ namespace RigBus
       Tune = 8,
       /// <summary> Defines the FSR
       /// </summary>
-      FSR = 9,
+      FSKR = 9,
       /// <summary> Defines the ERROR
       /// </summary>
       ERROR = 10
     }
-
-
 
     protected override void initStartupState()
     {
@@ -140,23 +138,27 @@ namespace RigBus
       //   IF000180907501000+0000000000030010000;
 
 
-      var freq = cmd.Substring(2, 11);          // p1 Freq
-      var space = cmd.Substring(13, 5);          // p2 space
-      var rit = cmd.Substring(18, 5);     // p3 rit/xit offset 
-      var ritState = cmd.Substring(23, 1);     // p4 rit on/off
-      var xitState = cmd.Substring(24, 1);      // p5 xit on/off
-      var memChannel = cmd.Substring(25,1);   // p6 mem channel
-      var memChannel2 = cmd.Substring(26, 2); // p7 memchannel 2
-      var rxTx = cmd.Substring(28, 1); // p8
+      var freq = cmd.Substring(2, 11);         // p1 Freq
+      var space = cmd.Substring(13, 5);        // p2 space
+      var rit = cmd.Substring(18, 5);          // p3 rit/xit offset 
+      var ritOn = cmd.Substring(23, 1);        // p4 rit on/off
+      var xitOn = cmd.Substring(24, 1);        // p5 xit on/off
+      var memChannel = cmd.Substring(25,1);    // p6 mem channel
+      var memChannel2 = cmd.Substring(26, 2);  // p7 memchannel 2
+      var rxTx = cmd.Substring(28, 1);         // p8
       var mode = cmd.Substring(29, 1);
       
       // p7 mem channel 2
       Console.WriteLine($"Freq: {freq} ");
-      Console.WriteLine($"xit: {rit} ");
-      Console.WriteLine($"ritState: {ritState} ");
-      Console.WriteLine($"xitstate: {xitState} ");
-      Console.WriteLine($"rxTx: {rxTx} ");
+      State.Freq = Convert.ToInt64(freq);
+      if (rit == "1") State.Rit = true; else State.Rit = false;
+      if (rit == "1") State.Xit = true; else State.Xit = false;
+      if (rxTx == "1") State.Tx = true; else State.Tx = false;
+      State.Mode = ModeKenwoodToStandard((ModeValues) Convert.ToInt32(mode));
       Console.WriteLine($"Mode: {mode} ");
+      if (State.IsDirty() == true)
+        SendState();
+      State.ClearDirty();
     }
 
 
@@ -262,10 +264,6 @@ namespace RigBus
         if (!PausePolling)
         {
           SendSerial("IF;");
-          // SendSerial($"FT;"); // read vfo
-          //SendSerial($"FA;"); // read vfo a
-          //SendSerial($"MD;");
-          //SendSerial($"FR;");
         }
       }
     }
@@ -349,15 +347,43 @@ namespace RigBus
         case "DIGH":
           return ModeValues.FSK;
         case "DIGL":
-          return ModeValues.FSR;
+          return ModeValues.FSKR;
         case "CWR":
           return ModeValues.CWR;
         case "FSR":
-          return ModeValues.FSR;
+          return ModeValues.FSKR;
         case "TUNE":
           return ModeValues.Tune;
       }
       return ModeValues.ERROR;
+    }
+
+    private string ModeKenwoodToStandard(ModeValues mode)
+    {
+
+      switch (mode)
+      {
+        case ModeValues.USB:
+          return "USB";
+        case ModeValues.LSB:
+          return "LSB";
+        case ModeValues.CW:
+          return "CW";
+        case ModeValues.AM:
+          return "AM";
+        case ModeValues.FM:
+          return "FM";
+        case ModeValues.FSK:
+          return "FSK";
+
+        case ModeValues.CWR:
+          return "CWR";
+        case ModeValues.FSKR:
+          return "FSKR";
+        case ModeValues.Tune:
+          return "TUNE";
+      }
+      return "ERROR";
     }
     #region Commands
     public override void SetFrequency(long freq)
@@ -391,7 +417,7 @@ namespace RigBus
       SendSerial(cmd);
 
     }
-    public override void SetState(RigState state)
+    public override void SetStateFromBus(RigState state)
     {
       if (state.Name == Name || IsStateLocked) return;
       Console.WriteLine($"{state.Name}: {state.Freq}  {state.Mode}");

@@ -53,7 +53,7 @@ namespace RigBus
     private void OnStateChange(RigState state)
     {
       rig!.PausePolling = true;
-      rig!.SetState(state);
+      rig!.SetStateFromBus(state);
       rig!.PausePolling = false;
 
     }
