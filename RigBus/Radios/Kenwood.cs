@@ -147,16 +147,17 @@ namespace RigBus
       var memChannel = cmd.Substring(25,1);    // p6 mem channel
       var memChannel2 = cmd.Substring(26, 2);  // p7 memchannel 2
       var rxTx = cmd.Substring(28, 1);         // p8
-      var mode = cmd.Substring(29, 1);
+      var mode = cmd.Substring(29, 1);         // p9 mode
+      var vfo = cmd.Substring(30, 1);          // p10 VFO
       
       // p7 mem channel 2
-      Console.WriteLine($"Freq: {freq} ");
+      //Console.WriteLine($"Freq: {freq} ");
       State.Freq = Convert.ToInt64(freq);
       if (rit == "1") State.Rit = true; else State.Rit = false;
       if (rit == "1") State.Xit = true; else State.Xit = false;
       if (rxTx == "1") State.Tx = true; else State.Tx = false;
       State.Mode = ModeKenwoodToStandard((ModeValues) Convert.ToInt32(mode));
-      Console.WriteLine($"Mode: {mode} ");
+      //Console.WriteLine($"Mode: {mode} ");
       State.Name = Bus.Name;
       if (State.IsDirty() == true)
         SendState();
@@ -285,7 +286,6 @@ namespace RigBus
             {
               if (portConf == null)
                 throw new NullReferenceException("port confi is null!");
-              Console.WriteLine("Serial port {0} read error", portConf.commPortName);
               return;
             }
             char ch = Convert.ToChar(c);
@@ -388,27 +388,29 @@ namespace RigBus
       return "ERROR";
     }
     #region Commands
-    public override void SetFrequency(long freq)
+    public override void SetLocalFrequency(long freq)
     {
-      var f = freq.ToString("00000000000");
-      Console.WriteLine($"freq: {f}");
+      var f = freq.ToString("D11");
+      Console.WriteLine($"393: freq: {f}");
 
     }
-    public override void SetFrequencyA(long freq)
+    public override void SetLocalFrequencyA(long freq)
     {
       if (IsStateLocked) return;
-      var f = freq.ToString("00000000000");
+      var f = freq.ToString("D11");
       var cmd = $"FA{f};";
+      Console.WriteLine($"401: from bus vfo a: {f} orig: {freq}");
       SendSerial(cmd, IsStateLocked);
     }
-    public override void SetFrequencyB(long freq)
+    public override void SetLocalFrequencyB(long freq)
     {
       if (IsStateLocked) return;
-      var f = freq.ToString("00000000000");
+      var f = freq.ToString("D11");
+      Console.WriteLine($"408: from bus vfo b: {f} orig: {freq}");
       var cmd = $"FB{f};";
       SendSerial(cmd);
     }
-    public override void SetMode(string? mode) 
+    public override void SetLocalMode(string? mode) 
     {
 
       if (string.IsNullOrWhiteSpace(mode) || IsStateLocked)
@@ -421,12 +423,12 @@ namespace RigBus
     }
     public override void SetStateFromBus(RigState state)
     {
-      
+      Console.WriteLine($"425: {state.Name}: {state.Freq}  A{state.FreqA} B{state.FreqB} {state.Mode}");
       if (state.Name == Bus.Name || IsStateLocked) return;
-      Console.WriteLine($"{state.Name}: {state.Freq}  A{state.FreqA} B{state.FreqB} {state.Mode}");
-      SetFrequencyA(state.FreqA);
-      SetFrequencyB(state.FreqB);
-      SetMode(state.Mode);
+      //Console.WriteLine($"{state.Name}: {state.Freq}  A{state.FreqA} B{state.FreqB} {state.Mode}");
+      SetLocalFrequencyA(state.Freq);
+      SetLocalFrequencyB(state.FreqB);
+      SetLocalMode(state.Mode);
     }
     #endregion
     #endregion
