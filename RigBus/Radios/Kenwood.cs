@@ -391,7 +391,7 @@ namespace RigBus
     public override void SetLocalFrequency(long freq)
     {
       var f = freq.ToString("D11");
-      Console.WriteLine($"393: freq: {f}");
+      //Console.WriteLine($"393: freq: {f}");
 
     }
     public override void SetLocalFrequencyA(long freq)
@@ -399,14 +399,14 @@ namespace RigBus
       if (IsStateLocked) return;
       var f = freq.ToString("D11");
       var cmd = $"FA{f};";
-      Console.WriteLine($"401: from bus vfo a: {f} orig: {freq}");
+      //Console.WriteLine($"401: from bus vfo a: {f} orig: {freq}");
       SendSerial(cmd, IsStateLocked);
     }
     public override void SetLocalFrequencyB(long freq)
     {
       if (IsStateLocked) return;
       var f = freq.ToString("D11");
-      Console.WriteLine($"408: from bus vfo b: {f} orig: {freq}");
+      //Console.WriteLine($"408: from bus vfo b: {f} orig: {freq}");
       var cmd = $"FB{f};";
       SendSerial(cmd);
     }
@@ -423,7 +423,7 @@ namespace RigBus
     }
     public override void SetStateFromBus(RigState state)
     {
-      Console.WriteLine($"425: {state.Name}: {state.Freq}  A{state.FreqA} B{state.FreqB} {state.Mode}");
+      //Console.WriteLine($"425: {state.Name}: {state.Freq}  A{state.FreqA} B{state.FreqB} {state.Mode}");
       if (state.Name == Bus.Name || IsStateLocked) return;
       //Console.WriteLine($"{state.Name}: {state.Freq}  A{state.FreqA} B{state.FreqB} {state.Mode}");
       SetLocalFrequencyA(state.Freq);
