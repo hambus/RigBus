@@ -430,6 +430,9 @@ namespace RigBus
       SetLocalFrequencyB(state.FreqB);
       SetLocalMode(state.Mode);
     }
+
+
+
     #endregion
     #endregion
   }
