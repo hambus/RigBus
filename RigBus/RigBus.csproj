@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\HamBusCommonLibCore\HamBusCommonCore.csproj" />
+    <ProjectReference Include="..\..\HamBusCommonStd\HamBusCommonStd.csproj" />
   </ItemGroup>
 
 </Project>

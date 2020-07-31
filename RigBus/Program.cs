@@ -4,8 +4,8 @@ using System.IO.Ports;
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
-using CoreHambusCommonLibrary.Model;
 using HambusCommonLibrary;
+using HamBusCommonStd.Model;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace RigBus

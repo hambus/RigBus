@@ -2,10 +2,9 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using CoreHambusCommonLibrary.Model;
-using CoreHambusCommonLibrary.Networking;
-using HamBusCommmonCore;
-using HamBusCommonCore.Model;
+using HamBusCommmonStd;
+using HamBusCommonCore.Networking;
+using HamBusCommonStd.Model;
 using KellermanSoftware.CompareNetObjects;
 
 namespace RigBus
@@ -430,6 +429,11 @@ namespace RigBus
       SetLocalFrequencyB(state.FreqB);
       SetLocalMode(state.Mode);
     }
+
+    //public override void SetStateFromBus(RigState state)
+    //{
+    //  throw new NotImplementedException();
+    //}
     #endregion
     #endregion
   }

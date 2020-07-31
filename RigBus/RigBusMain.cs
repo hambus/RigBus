@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO.Ports;
-using System.Text.Json;
 using System.Threading.Tasks;
-using CoreHambusCommonLibrary.DataLib;
-using CoreHambusCommonLibrary.Model;
-using CoreHambusCommonLibrary.Networking;
-using HamBusCommmonCore;
-using HamBusCommonCore.Model;
-using HambusCommonLibrary;
-using Microsoft.AspNetCore.SignalR.Client;
+using HamBusCommmonStd;
+using HamBusCommonCore.Networking;
+using HamBusCommonStd.Model;
+
 
 namespace RigBus
 {
@@ -17,7 +12,7 @@ namespace RigBus
   {
     public KenwoodRig? rig { get; set; }
     private SigRConnection? sigRConn;
-
+    private HubConnection? connection;
 
 
     public async Task Run()
