@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using CoreHambusCommonLibrary.Model;
 using CoreHambusCommonLibrary.Networking;
-using HamBusCommmonCore;
+using HamBusCommmonStd;
 using HamBusCommonCore.Model;
 using KellermanSoftware.CompareNetObjects;
 
@@ -13,7 +13,7 @@ namespace RigBus
   public class KenwoodRig : RigControlBase
   {
     private CompareLogic compareLogic = new CompareLogic();
-
+    private int dbCouner = 0;
 
     public KenwoodRig() : base()
     {
@@ -241,12 +241,15 @@ namespace RigBus
     private void SendState()
     {
 
-      if (!compareLogic.Compare(prevState, State).AreEqual)
+      if (State.IsDirty())
       {
-        prevState = (RigState)State.Clone();
+        State.ClearDirty();
+        Console.WriteLine($"247: Sending state {dbCouner++} {State.IsDirty()}");
+        //prevState = (RigState)State.Clone();
         if (sigConnect == null)
           sigConnect = SigRConnection.Instance;
         sigConnect.SendRigState(State);
+        
 
       }
     }
@@ -430,7 +433,6 @@ namespace RigBus
       SetLocalFrequencyB(state.FreqB);
       SetLocalMode(state.Mode);
     }
-
 
 
     #endregion

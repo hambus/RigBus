@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO.Ports;
-using System.Text.Json;
 using System.Threading.Tasks;
-using CoreHambusCommonLibrary.DataLib;
 using CoreHambusCommonLibrary.Model;
 using CoreHambusCommonLibrary.Networking;
-using HamBusCommmonCore;
-using HamBusCommonCore.Model;
-using HambusCommonLibrary;
+using HamBusCommmonStd;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace RigBus
