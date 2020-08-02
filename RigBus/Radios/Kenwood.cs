@@ -161,7 +161,6 @@ namespace RigBus
       State.Name = Bus.Name;
       if (State.IsDirty() == true)
         SendState();
-      State.ClearDirty();
     }
 
 
@@ -233,18 +232,11 @@ namespace RigBus
     private void SendState()
     {
 
-      if (State.IsDirty())
-      {
-
-        Console.WriteLine($"247: Sending state {dbCouner++} {State.IsDirty()}");
-        State.ClearDirty();
-        //prevState = (RigState)State.Clone();
+        Console.WriteLine($"236: Sending state {dbCouner++} {State.IsDirty()}");
         if (sigConnect == null)
           sigConnect = SigRConnection.Instance;
         sigConnect.SendRigState(State);
-        
-
-      }
+ 
     }
 
     private void VFOCommand(string cmd)
@@ -395,14 +387,12 @@ namespace RigBus
       if (IsStateLocked) return;
       var f = freq.ToString("D11");
       var cmd = $"FA{f};";
-      //Console.WriteLine($"401: from bus vfo a: {f} orig: {freq}");
       SendSerial(cmd, IsStateLocked);
     }
     public override void SetLocalFrequencyB(long freq)
     {
       if (IsStateLocked) return;
       var f = freq.ToString("D11");
-      //Console.WriteLine($"408: from bus vfo b: {f} orig: {freq}");
       var cmd = $"FB{f};";
       SendSerial(cmd);
     }
