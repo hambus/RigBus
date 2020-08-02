@@ -73,7 +73,7 @@ namespace RigBus
           AutoInfoCommand(cmd);
           break;
         case "FA":
-          FreqCommand(cmd);
+          //FreqCommand(cmd);
           break;
         case "FR":
         case "FT":
@@ -101,7 +101,7 @@ namespace RigBus
 
     private void EXCommand(string cmd)
     {
-      SendSerial("?;");
+      //SendSerial("?;");
     }
 
     private void ReadKeyingSpeedCommand(string cmd)
@@ -200,15 +200,7 @@ namespace RigBus
       }
 
     }
-    private void FreqCommand(string cmd)
-    {
-      if (cmd.Length <= 4)
-      {
-        RequestFrequency(cmd);
-        return;
-      }
-      ParseFrequency(cmd);
-    }
+
 
     private void ParseFrequency(string cmd)
     {
@@ -243,8 +235,9 @@ namespace RigBus
 
       if (State.IsDirty())
       {
-        State.ClearDirty();
+
         Console.WriteLine($"247: Sending state {dbCouner++} {State.IsDirty()}");
+        State.ClearDirty();
         //prevState = (RigState)State.Clone();
         if (sigConnect == null)
           sigConnect = SigRConnection.Instance;
