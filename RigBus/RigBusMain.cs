@@ -51,6 +51,7 @@ namespace RigBus
     private void OnStateChange(RigState state)
     {
       rig!.PausePolling = true;
+      Console.WriteLine($"test of serial #{ state.SerialNum}");
       rig!.SetStateFromBus(state);
       rig!.PausePolling = false;
 
