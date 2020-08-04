@@ -5,7 +5,7 @@ using System.IO.Ports;
 using System.Threading.Tasks;
 using CoreHambusCommonLibrary.Model;
 using CoreHambusCommonLibrary.Networking;
-using HamBusCommmonStd;
+using HamBusCommonStd;
 using Microsoft.AspNetCore.SignalR.Client;
 
 
