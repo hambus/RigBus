@@ -16,7 +16,7 @@ namespace RigBus
   {
     public KenwoodRig? rig { get; set; }
     private SigRConnection? sigRConn;
-    private HubConnection? connection;
+    //private HubConnection? connection;
 
 
     public async Task Run()
