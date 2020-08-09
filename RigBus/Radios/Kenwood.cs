@@ -188,7 +188,6 @@ namespace RigBus
     }
     private void VfoCommand(string cmd)
     {
-
       if (cmd.Length == 4)
       {
         if (cmd[2] == '1')
@@ -197,7 +196,6 @@ namespace RigBus
           State.Vfo = "a";
         return;
       }
-
     }
 
 
@@ -231,12 +229,9 @@ namespace RigBus
 
     private void SendState()
     {
-
-        Console.WriteLine($"236: Sending state {dbCouner++} {State.IsDirty()}");
         if (sigConnect == null)
           sigConnect = SigRConnection.Instance;
         sigConnect.SendRigState(State);
- 
     }
 
     private void VFOCommand(string cmd)
@@ -379,26 +374,22 @@ namespace RigBus
     public override void SetLocalFrequency(long freq)
     {
       var f = freq.ToString("D11");
-      //Console.WriteLine($"393: freq: {f}");
-
     }
     public override void SetLocalFrequencyA(long freq)
     {
-      if (IsStateLocked) return;
       var f = freq.ToString("D11");
       var cmd = $"FA{f};";
-      SendSerial(cmd, IsStateLocked);
+      SendSerial(cmd);
     }
     public override void SetLocalFrequencyB(long freq)
     {
-      if (IsStateLocked) return;
+
       var f = freq.ToString("D11");
       var cmd = $"FB{f};";
       SendSerial(cmd);
     }
     public override void SetLocalMode(string? mode) 
     {
-
       if (string.IsNullOrWhiteSpace(mode) || IsStateLocked)
         return;
       var kMode = (int) ModeStandardToKenwoodEnum(mode);
@@ -409,9 +400,10 @@ namespace RigBus
     }
     public override void SetStateFromBus(RigState state)
     {
-      //Console.WriteLine($"425: {state.Name}: {state.Freq}  A{state.FreqA} B{state.FreqB} {state.Mode}");
+      if (IsStateLocked) return;
+
       if (state.Name == Bus.Name || IsStateLocked) return;
-      //Console.WriteLine($"{state.Name}: {state.Freq}  A{state.FreqA} B{state.FreqB} {state.Mode}");
+
       SetLocalFrequencyA(state.Freq);
       SetLocalFrequencyB(state.FreqB);
       SetLocalMode(state.Mode);

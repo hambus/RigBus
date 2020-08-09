@@ -16,14 +16,13 @@ namespace RigBus
   {
     public KenwoodRig? rig { get; set; }
     private SigRConnection? sigRConn;
-    //private HubConnection? connection;
-
 
     public async Task Run()
     {
       sigRConn = SigRConnection.Instance;
 
       sigRConn.RigState__.Subscribe<RigState>(state => OnStateChange(state));
+      sigRConn.LockModel__.Subscribe<LockModel>(locker => OnLockChange(locker));
 
       rig = new KenwoodRig();
 
@@ -37,6 +36,14 @@ namespace RigBus
       
       Login(Name, groupList, ports);
     }
+
+    private void OnLockChange(LockModel locker)
+    {
+      Console.WriteLine("In On lockchange");
+      if (locker == null) return;
+      rig.IsStateLocked = locker.IsStateLocked;
+    }
+
     public async void Login(string name, List<string>? group, List<string>? ports)
     {
       rig!.Name = name;
