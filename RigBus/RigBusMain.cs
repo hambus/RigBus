@@ -40,7 +40,7 @@ namespace RigBus
     private void OnLockChange(LockModel locker)
     {
       Console.WriteLine("In On lockchange");
-      if (locker == null) return;
+      if (locker == null || rig == null) return;
       rig.IsStateLocked = locker.IsStateLocked;
     }
 
