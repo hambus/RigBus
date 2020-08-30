@@ -13,7 +13,6 @@ namespace RigBus
   public class KenwoodRig : RigControlBase
   {
     private CompareLogic compareLogic = new CompareLogic();
-    private int dbCouner = 0;
 
     public KenwoodRig() : base()
     {
@@ -287,14 +286,14 @@ namespace RigBus
           {
             if (portConf == null)
               throw new NullReferenceException("port confi is null!");
-            Console.WriteLine("Timeout Exception:  Maybe {0} isn't running.", portConf.name);
+            Console.WriteLine("Timeout Exception:  Maybe {0} isn't running.", portConf.Name);
           }
           catch (Exception e)
           {
             if (portConf == null)
               throw new NullReferenceException("port confi is null!");
             Console.WriteLine("Serial Read Error: {0} port {1} Display Name: {2}",
-                e.ToString(), portConf.commPortName, portConf.name);
+                e.ToString(), portConf.CommPortName, portConf.Name);
           }
         }
         catch (TimeoutException)
