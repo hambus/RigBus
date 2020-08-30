@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HamBusCommonStd", "..\..\Ha
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualRigBus", "..\VirtualRigBus\VirtualRigBus.csproj", "{6D9F9819-7CC9-4B0B-8C07-235C1EE13E8C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KenwoodLib", "..\KenwoodLib\KenwoodLib.csproj", "{2B2F77E2-76E6-4A98-A229-77B7C7A5C09E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{6D9F9819-7CC9-4B0B-8C07-235C1EE13E8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D9F9819-7CC9-4B0B-8C07-235C1EE13E8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D9F9819-7CC9-4B0B-8C07-235C1EE13E8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B2F77E2-76E6-4A98-A229-77B7C7A5C09E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B2F77E2-76E6-4A98-A229-77B7C7A5C09E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B2F77E2-76E6-4A98-A229-77B7C7A5C09E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B2F77E2-76E6-4A98-A229-77B7C7A5C09E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

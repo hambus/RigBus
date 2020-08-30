@@ -10,10 +10,12 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
+    <PackageReference Include="CompareNETObjects" Version="4.66.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\HamBusCommonLibCore\HamBusCommonCore.csproj" />
+    <ProjectReference Include="..\KenwoodLib\KenwoodLib.csproj" />
   </ItemGroup>
 
 </Project>
