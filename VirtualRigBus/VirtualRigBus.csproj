@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <LangVersion>8.0</LangVersion>
+	  <OutputType>Exe</OutputType>
+	  <LangVersion>8.0</LangVersion>
+	  <TargetFramework>netcoreapp3.1</TargetFramework>
+	  <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\HamBusCommonLibCore\HamBusCommonCore.csproj" />
+  </ItemGroup>
+
+</Project>
