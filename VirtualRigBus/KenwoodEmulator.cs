@@ -9,6 +9,7 @@ using HamBusCommonCore.Model;
 using HambusCommonLibrary;
 using HamBusCommonStd;
 using KenwoodLib;
+using Serilog;
 
 namespace VirtualRigBus
 {
@@ -332,6 +333,7 @@ namespace VirtualRigBus
 
     private void ModeCommand(string cmd)
     {
+      Log.Verbose("current state: {@state}", state);
       try
       {
         if (cmd.Length == 3)

@@ -30,14 +30,14 @@ namespace RigBus
     static async Task Main(string[] args)
     {
       Log.Logger = new LoggerConfiguration()
-      .MinimumLevel.Information()
+      .MinimumLevel.Verbose()
       .WriteTo.Console(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
       .WriteTo.File("c:\\Logs\\rigbugvlog.txt",
           rollingInterval: RollingInterval.Day,
           rollOnFileSizeLimit: true)
       .CreateLogger();
 
-      Log.Information("Hello, Serilog!");
+      Log.Information("Hello, Virtual RigBus Serilog!");
       var prog = new Program();
       await prog.Run(args);
 

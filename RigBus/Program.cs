@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO.Ports;
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
 using CoreHambusCommonLibrary.Model;
-using HambusCommonLibrary;
-using HamBusCommonStd.Model;
-using Microsoft.AspNetCore.SignalR.Client;
+using HamBusCommonCore;
 using Serilog;
 
 namespace RigBus
@@ -33,17 +30,20 @@ namespace RigBus
       await prog.Run(args);
     }
 
-    async Task Run(string[] args) 
+    async Task Run(string[] args)
     {
       Log.Logger = new LoggerConfiguration()
-  .MinimumLevel.Information()
-  .WriteTo.Console(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
-  .WriteTo.File("c:\\Logs\\rigbuglog.txt",
-      rollingInterval: RollingInterval.Day,
-      rollOnFileSizeLimit: true)
-  .CreateLogger();
+        .MinimumLevel.Verbose()
+        .WriteTo.Console(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+        .WriteTo.File("c:\\Logs\\rigbuglog.txt",
+            rollingInterval: RollingInterval.Day,
+            rollOnFileSizeLimit: true)
+        .CreateLogger();
 
-      Log.Information("Hello, Serilog!");
+
+      BusLogging.SetLogging(Log.Logger);
+
+      Log.Information("Hello, Rig Serilog!");
       rigMain = new RigBusMain();
       Parser.Default.ParseArguments<Options>(args)
         .WithParsed(RunOptions)
@@ -53,11 +53,11 @@ namespace RigBus
 
       while (true) Thread.Sleep(100000);
     }
-     void RunOptions(Options opts)
+    void RunOptions(Options opts)
     {
       if (rigMain == null)
         throw new NullReferenceException("RigMain");
-      if (opts.Name != null) 
+      if (opts.Name != null)
         Bus.Name = opts.Name;
       if (opts.Host != null)
         rigMain!.MasterHost = opts.Host;

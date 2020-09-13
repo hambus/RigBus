@@ -7,8 +7,7 @@ using CoreHambusCommonLibrary.Model;
 using CoreHambusCommonLibrary.Networking;
 using HamBusCommonStd;
 using Microsoft.AspNetCore.SignalR.Client;
-
-
+using Serilog;
 
 namespace RigBus
 {
@@ -61,7 +60,8 @@ namespace RigBus
     private void OnStateChange(RigState state)
     {
       rig!.PausePolling = true;
-      Console.WriteLine($"test of serial #{ state.SerialNum}");
+      Log.Verbose("on state change {@state.SerialNum}", state);
+      Console.WriteLine("test of log");
       rig!.SetStateFromBus(state);
       rig!.PausePolling = false;
 
