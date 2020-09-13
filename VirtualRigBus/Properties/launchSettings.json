@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "VirtualRigBus": {
+      "commandName": "Project",
+      "commandLineArgs": "-n dpw"
+    }
+  }
+}

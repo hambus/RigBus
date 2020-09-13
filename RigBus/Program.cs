@@ -8,6 +8,7 @@ using CoreHambusCommonLibrary.Model;
 using HambusCommonLibrary;
 using HamBusCommonStd.Model;
 using Microsoft.AspNetCore.SignalR.Client;
+using Serilog;
 
 namespace RigBus
 {
@@ -34,6 +35,15 @@ namespace RigBus
 
     async Task Run(string[] args) 
     {
+      Log.Logger = new LoggerConfiguration()
+  .MinimumLevel.Information()
+  .WriteTo.Console(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+  .WriteTo.File("c:\\Logs\\rigbuglog.txt",
+      rollingInterval: RollingInterval.Day,
+      rollOnFileSizeLimit: true)
+  .CreateLogger();
+
+      Log.Information("Hello, Serilog!");
       rigMain = new RigBusMain();
       Parser.Default.ParseArguments<Options>(args)
         .WithParsed(RunOptions)

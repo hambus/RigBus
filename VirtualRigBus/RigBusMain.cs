@@ -7,14 +7,13 @@ using CoreHambusCommonLibrary.Model;
 using CoreHambusCommonLibrary.Networking;
 using HamBusCommonStd;
 using Microsoft.AspNetCore.SignalR.Client;
-
-
+using VirtualRigBus;
 
 namespace RigBus
 {
   public class RigBusMain: Bus
   {
-    public KenwoodRig? rig { get; set; }
+    public KenwoodEmulator? rig { get; set; }
     private SigRConnection? sigRConn;
 
     public async Task Run()
@@ -24,7 +23,7 @@ namespace RigBus
       sigRConn.RigState__.Subscribe<RigState>(state => OnStateChange(state));
       //sigRConn.LockModel__.Subscribe<LockModel>(locker => OnLockChange(locker));
 
-      rig = new KenwoodRig();
+      rig = new KenwoodEmulator();
 
       connection = await sigRConn.StartConnection($"http://{MasterHost}:{MasterPort}/masterbus");
 

@@ -12,7 +12,7 @@ using KenwoodLib;
 
 namespace VirtualRigBus
 {
-  class KenwoodEmulator : RigControlBase
+  public class KenwoodEmulator : RigControlBase
   {
     public RigState state = new RigState();
 
@@ -83,8 +83,9 @@ namespace VirtualRigBus
             if (ch == ';')
             {
               sb.Append(ch);
-              //ParseDataFromRadio(sb.ToString());
-              sb.Clear();
+              Command(sb.ToString());
+              //sb.Clear();
+              Console.WriteLine(sb);
             }
             else
             {
@@ -116,14 +117,7 @@ namespace VirtualRigBus
     }
     public override void PollRig()
     {
-      while (true)
-      {
-        Thread.Sleep(PollTimer);
-        if (!PausePolling)
-        {
-          SendSerial("IF;");
-        }
-      }
+
     }
     protected override void initStartupState()
     {
@@ -192,12 +186,12 @@ namespace VirtualRigBus
       Console.WriteLine($"rcmd: {subcmd}");
       switch (subcmd)
       {
-        case "ID":
-          IDCommand(cmd);
-          break;
-        case "AI":
-          AICommand(cmd);
-          break;
+        //case "ID":
+        //  IDCommand(cmd);
+        //  break;
+        //case "AI":
+        //  AICommand(cmd);
+        //  break;
         case "FA":
           FreqCommand(cmd);
           break;
@@ -205,31 +199,31 @@ namespace VirtualRigBus
           FreqCommand(cmd);
           break;
         case "FR":
-          FreqCommand(cmd);
+          SelectVFOReceiver(cmd);
           break;
         case "FT":
-          FTCommand(cmd);
+          SelectVFOTransmitter(cmd);
+          break;
+        case "IF":
+          TransceiverStatus(cmd);
+          break;
+        case "KS":
+          KeyingSpeed(cmd);
           break;
         case "MD":
           ModeCommand(cmd);
           break;
-        case "TX":
-          TXRXCommand(cmd);
-          break;
-        case "IF":
-          IFCommand(cmd);
-          break;
-        case "RX":
-          TXRXCommand(cmd);
-          break;
-        case "KS":
-          KSCommand(cmd);
-          break;
+        //case "RX":
+        //  TXRXCommand(cmd);
+        //  break;
         case "SM":
-          SMCommand(cmd);
+          SMeterStatus(cmd);
+          break;
+        case "TX":
+          TXMode(cmd);
           break;
         case "EX":
-          EXCommand(cmd);
+          ExtendedMenuMode(cmd);
           break;
         case "?;":
           Console.WriteLine("Error: {0}", cmd);
@@ -240,18 +234,33 @@ namespace VirtualRigBus
       }
     }
 
+    private void SelectVFOReceiver(string cmd)
+    {
+      throw new NotImplementedException();
+    }
+
+    private void SelectVFOTransmitter(string cmd)
+    {
+      throw new NotImplementedException();
+    }
+
+    private void SelectVFO(string cmd)
+    {
+      throw new NotImplementedException();
+    }
+
     #region parse commands
-    private void SMCommand(string cmd)
+    private void SMeterStatus(string cmd)
     {
       SendSerial("SM00000;");
     }
 
-    private void EXCommand(string cmd)
+    private void ExtendedMenuMode(string cmd)
     {
       SendSerial("?;");
     }
 
-    private void KSCommand(string cmd)
+    private void KeyingSpeed(string cmd)
     {
       if (cmd.Length == 3)
       {
@@ -267,23 +276,23 @@ namespace VirtualRigBus
       }
     }
 
-    private void IDCommand(string cmd)
-    {
-      if (cmd.Length == 3)
-      {
-        SendSerial("ID020;");
-      }
-    }
+    //private void IDCommand(string cmd)
+    //{
+    //  if (cmd.Length == 3)
+    //  {
+    //    SendSerial("ID020;");
+    //  }
+    //}
 
-    private void AICommand(string cmd)
-    {
-      if (cmd.Length == 3)
-      {
-        SendSerial("AI0;");
-      }
-    }
+    //private void AICommand(string cmd)
+    //{
+    //  if (cmd.Length == 3)
+    //  {
+    //    SendSerial("AI0;");
+    //  }
+    //}
 
-    private void IFCommand(string cmd)
+    private void TransceiverStatus(string cmd)
     {
       string sendStr;
       string extStr;
@@ -308,7 +317,7 @@ namespace VirtualRigBus
       SendSerial(sendStr);
     }
 
-    private void TXRXCommand(string cmd)
+    private void TXMode(string cmd)
     {
       if (cmd == "TX;")
       {
@@ -327,10 +336,10 @@ namespace VirtualRigBus
       {
         if (cmd.Length == 3)
         {
-
-          int mode = Convert.ToInt32(KenwodModesConverter.ModeStandardToKenwoodEnum(state.Mode.ToUpper()));
-          var modeFmt = string.Format("MD{0};", mode.ToString());
-          SendSerial(modeFmt);
+          Console.WriteLine($"command: {cmd}");
+          //int mode = Convert.ToInt32(KenwodModesConverter.ModeStandardToKenwoodEnum(state.Mode.ToUpper()));
+          //var modeFmt = string.Format("MD{0};", mode.ToString());
+          //SendSerial(modeFmt);
 
           return;
         }
