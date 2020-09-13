@@ -40,9 +40,6 @@ namespace RigBus
             rollOnFileSizeLimit: true)
         .CreateLogger();
 
-
-      BusLogging.SetLogging(Log.Logger);
-
       Log.Information("Hello, Rig Serilog!");
       rigMain = new RigBusMain();
       Parser.Default.ParseArguments<Options>(args)

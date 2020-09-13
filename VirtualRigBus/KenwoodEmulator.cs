@@ -333,7 +333,7 @@ namespace VirtualRigBus
 
     private void ModeCommand(string cmd)
     {
-      Log.Verbose("current state: {@state}", state);
+      Log.Verbose("KenwoodEmulator: current state: {@state}", state);
       try
       {
         if (cmd.Length == 3)
