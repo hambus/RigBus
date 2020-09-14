@@ -7,6 +7,7 @@ using CoreHambusCommonLibrary.Networking;
 using HamBusCommonStd;
 using HamBusCommonCore.Model;
 using KellermanSoftware.CompareNetObjects;
+using Serilog;
 
 namespace RigBus
 {
@@ -91,7 +92,7 @@ namespace RigBus
           EXCommand(cmd);
           break;
         default:
-          Console.WriteLine("Unknown: {0}", cmd);
+          Log.Warning("Kenwood:95 Unknown {@cmd}", cmd);
           break;
       }
     }
@@ -149,14 +150,13 @@ namespace RigBus
       var mode = cmd.Substring(29, 1);         // p9 mode
       var vfo = cmd.Substring(30, 1);          // p10 VFO
       
-      // p7 mem channel 2
-      //Console.WriteLine($"Freq: {freq} ");
+
       State.Freq = Convert.ToInt64(freq);
       if (rit == "1") State.Rit = true; else State.Rit = false;
       if (rit == "1") State.Xit = true; else State.Xit = false;
       if (rxTx == "1") State.Tx = true; else State.Tx = false;
       State.Mode = ModeKenwoodToStandard((ModeValues) Convert.ToInt32(mode));
-      //Console.WriteLine($"Mode: {mode} ");
+
       State.Name = Bus.Name;
       if (State.IsDirty() == true)
         SendState();

@@ -15,7 +15,7 @@ namespace VirtualRigBus
 {
   public class KenwoodEmulator : RigControlBase
   {
-    public RigState state = new RigState();
+    //public RigState state = new RigState();
 
     public int ThreadId;
 
@@ -185,7 +185,7 @@ namespace VirtualRigBus
       string subcmd = cmd.Substring(0, 2).ToUpper();
 
 
-      Log.Verbose("rcmd: {@subcmd}", subcmd);
+      //Log.Verbose("rcmd: {@subcmd}", subcmd);
       switch (subcmd)
       {
         //case "ID":
@@ -304,9 +304,9 @@ namespace VirtualRigBus
       //if (state.Tx)
       //  iTx = 1;
       extStr = string.Format("{0}000000 ",
-          Convert.ToInt32(KenwodModesConverter.ModeStandardToKenwoodEnum(state.Mode.ToUpper())));  // p15 6
+          Convert.ToInt32(KenwodModesConverter.ModeStandardToKenwoodEnum(State.Mode.ToUpper())));  // p15 6
       sendStr = string.Format("IF{0}{1}{2}{3}{4}{5}{6}{7}{8};",
-          state.Freq.ToString("D11"), //p1
+          State.Freq.ToString("D11"), //p1
           "TS480",//p2
           "+0000",// p3
           "0", // p4
@@ -323,11 +323,11 @@ namespace VirtualRigBus
     {
       if (cmd == "TX;")
       {
-        state.Tx = true;
+        State.Tx = true;
       }
       else
       {
-        state.Tx = false;
+        State.Tx = false;
       }
       //udpServer.SendBroadcast(state, 7300);
     }
@@ -339,17 +339,14 @@ namespace VirtualRigBus
       {
         if (cmd.Length == 3 && State.Mode != null)
         {
-          Log.Verbose("KenwoodEmu: command: {@cmd}",cmd);
+          //Log.Verbose("KenwoodEmu: command: {@cmd}",cmd);
           int mode = Convert.ToInt32(KenwodModesConverter.ModeStandardToKenwoodEnum(State.Mode.ToUpper()));
           var modeFmt = string.Format("MD{0};", mode.ToString());
           SendSerial(modeFmt);
 
           return;
         }
-        //var semiLoc = cmd.IndexOf(';');
-        //var modeEnumStr = cmd.Substring(2, semiLoc - 2);
-        //var modeInt = Convert.ToInt32(modeEnumStr);
-        //state.Mode = ((Mode)modeInt).ToString();
+
       }
       catch (FormatException)
       { }
@@ -359,25 +356,13 @@ namespace VirtualRigBus
     {
       if (cmd.Length == 3)
       {
+        Log.Warning("State @ freq command {@State}", State);
         if (cmd[1].ToString().ToLower() == "a")
-          SendSerial("FA" + state.FreqA.ToString("D11") + ";");
+          SendSerial("FA" + State.Freq.ToString("D11") + ";");
         else
-          SendSerial("FB" + state.FreqB.ToString("D11") + ";");
+          SendSerial("FB" + State.FreqB.ToString("D11") + ";");
         return;
       }
-
-
-      var semiLoc = cmd.IndexOf(';');
-      var freqStr = cmd.Substring(2, semiLoc - 2);
-      try
-      {
-        var freqInt = Convert.ToInt64(freqStr);
-        state.Freq = freqInt;
-        state.FreqA = freqInt;
-        //udpServer.SendBroadcast(state, 7300);
-      }
-      catch (Exception) { }
-
     }
 
     private void VFOCommand(string cmd)
@@ -553,7 +538,7 @@ namespace VirtualRigBus
     {
       if (IsStateLocked) return;
 
-      if (state.Name != Bus.Name || IsStateLocked) return;
+      //if (state.Name != Bus.Name || IsStateLocked) return;
       this.State = state;
       //SetLocalFrequencyA(state.Freq);
       //SetLocalFrequencyB(state.FreqB);

@@ -53,7 +53,7 @@ namespace RigBus
       }
       catch (Exception ex)
       {
-        Console.WriteLine($"Error: {ex.Message}");
+        Log.Error("RigBusMain:56: Exception {@ex}", ex);
       }
     }
 

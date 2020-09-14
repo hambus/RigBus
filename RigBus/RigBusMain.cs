@@ -61,7 +61,6 @@ namespace RigBus
     {
       rig!.PausePolling = true;
       Log.Verbose("RigBusMain: on state change {@state.SerialNum}", state);
-      Console.WriteLine("test of log");
       rig!.SetStateFromBus(state);
       rig!.PausePolling = false;
 
