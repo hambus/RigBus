@@ -84,9 +84,10 @@ namespace VirtualRigBus
             if (ch == ';')
             {
               sb.Append(ch);
+              Log.Verbose("kenwoodemu: 87: {@sb}", sb);
               Command(sb.ToString());
-              //sb.Clear();
-              Console.WriteLine(sb);
+              sb.Clear();
+
             }
             else
             {
@@ -184,7 +185,7 @@ namespace VirtualRigBus
       string subcmd = cmd.Substring(0, 2).ToUpper();
 
 
-      Console.WriteLine($"rcmd: {subcmd}");
+      Log.Verbose("rcmd: {@subcmd}", subcmd);
       switch (subcmd)
       {
         //case "ID":
@@ -227,10 +228,10 @@ namespace VirtualRigBus
           ExtendedMenuMode(cmd);
           break;
         case "?;":
-          Console.WriteLine("Error: {0}", cmd);
+          Log.Verbose("KenwoodEmu Unknown: {@cmd}", cmd);
           break;
         default:
-          Console.WriteLine("Unknown: {0}", cmd);
+          Log.Verbose("KenwoodEmu Unknown: {@cmd}", cmd);
           break;
       }
     }
@@ -333,22 +334,22 @@ namespace VirtualRigBus
 
     private void ModeCommand(string cmd)
     {
-      Log.Verbose("KenwoodEmulator: current state: {@state}", state);
+      Log.Verbose("KenwoodEmulator: current state: {@state}", State);
       try
       {
-        if (cmd.Length == 3)
+        if (cmd.Length == 3 && State.Mode != null)
         {
-          Console.WriteLine($"command: {cmd}");
-          //int mode = Convert.ToInt32(KenwodModesConverter.ModeStandardToKenwoodEnum(state.Mode.ToUpper()));
-          //var modeFmt = string.Format("MD{0};", mode.ToString());
-          //SendSerial(modeFmt);
+          Log.Verbose("KenwoodEmu: command: {@cmd}",cmd);
+          int mode = Convert.ToInt32(KenwodModesConverter.ModeStandardToKenwoodEnum(State.Mode.ToUpper()));
+          var modeFmt = string.Format("MD{0};", mode.ToString());
+          SendSerial(modeFmt);
 
           return;
         }
-        var semiLoc = cmd.IndexOf(';');
-        var modeEnumStr = cmd.Substring(2, semiLoc - 2);
-        var modeInt = Convert.ToInt32(modeEnumStr);
-        state.Mode = ((Mode)modeInt).ToString();
+        //var semiLoc = cmd.IndexOf(';');
+        //var modeEnumStr = cmd.Substring(2, semiLoc - 2);
+        //var modeInt = Convert.ToInt32(modeEnumStr);
+        //state.Mode = ((Mode)modeInt).ToString();
       }
       catch (FormatException)
       { }
@@ -552,11 +553,11 @@ namespace VirtualRigBus
     {
       if (IsStateLocked) return;
 
-      if (state.Name == Bus.Name || IsStateLocked) return;
-
-      SetLocalFrequencyA(state.Freq);
-      SetLocalFrequencyB(state.FreqB);
-      SetLocalMode(state.Mode);
+      if (state.Name != Bus.Name || IsStateLocked) return;
+      this.State = state;
+      //SetLocalFrequencyA(state.Freq);
+      //SetLocalFrequencyB(state.FreqB);
+      //SetLocalMode(state.Mode);
     }
     #endregion
   }
